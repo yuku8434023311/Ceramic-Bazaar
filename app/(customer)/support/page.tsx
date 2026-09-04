@@ -32,7 +32,7 @@ export default function SupportPage() {
   };
 
   const openWhatsApp = () => {
-    const whatsappUrl = `https://wa.me/918796020860?text=${encodeURIComponent(
+    const whatsappUrl = `https://wa.me/919315309289?text=${encodeURIComponent(
       "Hello Ceramic Bazaar Support, I need help with an order/product inquiry."
     )}`;
     window.open(whatsappUrl, "_blank");
@@ -63,7 +63,7 @@ export default function SupportPage() {
               💬 Direct WhatsApp Customer Support
             </h3>
             <p className="text-slate-300 text-xs sm:text-sm font-medium mt-0.5">
-              WhatsApp Helpdesk Number: <strong className="text-[#c59b27] font-bold underline">+91 87960 20860</strong>
+              WhatsApp Helpdesk Number: <strong className="text-[#c59b27] font-bold underline">+91 93153 09289</strong>
             </p>
           </div>
         </div>
@@ -72,15 +72,15 @@ export default function SupportPage() {
           onClick={openWhatsApp}
           className="w-full sm:w-auto bg-[#c59b27] hover:bg-[#b38820] text-slate-950 font-extrabold px-6 py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 border border-[#c59b27] shrink-0 text-sm transform transition-all active:scale-95"
         >
-          <span>Chat on WhatsApp (+91 87960 20860)</span>
+          <span>Chat on WhatsApp (+91 93153 09289)</span>
           <ExternalLink className="h-4 w-4" />
         </Button>
       </motion.div>
 
       <div className="grid md:grid-cols-3 gap-4 mb-8">
         {[
-          { icon: Phone, t: "Call Us", v: "+91 87960 20860", s: "Mon-Sat 9 AM - 8 PM" },
-          { icon: Mail, t: "Email Us", v: "ceramicbazaar@gmail.com", s: "24/7 online response" },
+          { icon: Phone, t: "Call Us", v: "+91 93153 09289", s: "Mon-Sat 9 AM - 8 PM" },
+          { icon: Mail, t: "Email Us", v: "ceramicbazaar0@gmail.com", s: "24/7 online response" },
           {
             icon: MapPin,
             t: "Visit Us",

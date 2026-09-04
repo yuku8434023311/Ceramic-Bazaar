@@ -79,7 +79,7 @@ export function LiveSupportWidget() {
             { label: "📦 Track My Order", action: "ACTION_TRACK" },
             { label: "✨ Explore Today's Best Offers", action: "ACTION_OFFERS" },
             { label: "📍 Store Location & Directions", action: "ACTION_LOCATION" },
-            { label: "💬 Chat on WhatsApp (+91 87960 20860)", action: "ACTION_WHATSAPP" },
+            { label: "💬 Chat on WhatsApp (+91 93153 09289)", action: "ACTION_WHATSAPP" },
           ],
         },
       ]);
@@ -168,9 +168,9 @@ export function LiveSupportWidget() {
           {
             id: `bot-${Date.now()}`,
             sender: "bot",
-            text: "📦 Please enter your **Order ID** or **Phone Number** below to track your order in real time, or visit our tracking page:",
+            text: "📦 You can track your existing orders, view delivery estimates, and download GST tax invoices directly from your Orders page:",
             link: "/orders",
-            linkText: "📦 Open Order Tracking",
+            linkText: "📦 View & Track My Orders",
           },
         ]);
       } else if (action === "ACTION_OFFERS") {
@@ -179,9 +179,9 @@ export function LiveSupportWidget() {
           {
             id: `bot-${Date.now()}`,
             sender: "bot",
-            text: "🔥 **Ceramic Bazaar Wholesale Deals:**\n\n1️⃣ **Vitrified Tiles:** Up to 25% Off wholesale rates\n2️⃣ **Sanitary Ware:** Premium rimless commodes & basins up to 29% Off\n3️⃣ **Bathroom Fittings:** Chrome & brass mixers up to 32% Off\n\n🎟️ Coupon code: **WHOLESALE20**",
+            text: "✨ Check out our latest wholesale discounts, brand partner promotions, and special festive deals on premium sanitary ware & tiles:",
             link: "/offers",
-            linkText: "✨ View All Offers",
+            linkText: "🏷️ Browse Active Offers",
           },
         ]);
       } else if (action === "ACTION_LOCATION") {
@@ -190,13 +190,13 @@ export function LiveSupportWidget() {
           {
             id: `bot-${Date.now()}`,
             sender: "bot",
-            text: "📍 **Ceramic Bazaar Showroom:**\n\nBhagwanpur Hat, Siwan, Bihar – 841408\n\n🕒 **Hours:** Mon - Sat : 9:00 AM - 8:00 PM\n📞 **Phone:** +91 87960 20860",
+            text: "📍 **Ceramic Bazaar Showroom:**\n\nBhagwanpur Hat, Siwan, Bihar – 841408\n\n🕒 **Hours:** Mon - Sat : 9:00 AM - 8:00 PM\n📞 **Phone:** +91 93153 09289",
             link: "https://maps.google.com/?q=Bhagwanpur+Hat+Siwan+Bihar+841408",
             linkText: "📍 Get Directions on Google Maps",
           },
         ]);
       } else if (action === "ACTION_WHATSAPP") {
-        const whatsappUrl = `https://wa.me/918796020860?text=${encodeURIComponent(
+        const whatsappUrl = `https://wa.me/919315309289?text=${encodeURIComponent(
           "Hello Ceramic Bazaar Support, I would like to inquire about products and pricing."
         )}`;
         window.open(whatsappUrl, "_blank");
@@ -205,7 +205,7 @@ export function LiveSupportWidget() {
           {
             id: `bot-${Date.now()}`,
             sender: "bot",
-            text: "📲 Opening WhatsApp support (+91 87960 20860)... Click below if it didn't open automatically.",
+            text: "📲 Opening WhatsApp support (+91 93153 09289)... Click below if it didn't open automatically.",
             link: whatsappUrl,
             linkText: "💬 Open WhatsApp Chat",
           },

@@ -129,7 +129,7 @@ export async function generateTaxInvoicePdf(
   doc.setFont("Helvetica", "bold");
   doc.text("Phone:", 42, 35);
   doc.setFont("Helvetica", "normal");
-  doc.text(data.store?.phone || "+91 87960 20860", 54, 35);
+  doc.text(data.store?.phone || "+91 93153 09289", 54, 35);
 
   doc.setFont("Helvetica", "normal");
   doc.text("Mobile No.:", 115, 35);

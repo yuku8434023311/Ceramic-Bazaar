@@ -682,7 +682,7 @@ export function HomeClient({
                 </p>
                 <div className="pt-2 border-t border-slate-700/60 flex flex-wrap items-center justify-between text-xs gap-1 font-bold">
                   <span className="text-[#c59b27]">🕒 Mon - Sat: 9 AM - 8 PM</span>
-                  <span className="text-slate-300">📞 +91 87960 20860</span>
+                  <span className="text-slate-300">📞 +91 93153 09289</span>
                 </div>
               </div>
             </div>

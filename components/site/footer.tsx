@@ -60,7 +60,7 @@ export function Footer() {
                 <Youtube className="w-4 h-4" />
               </a>
               <a
-                href="https://wa.me/918796020860"
+                href="https://wa.me/919315309289"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="WhatsApp"
@@ -219,11 +219,11 @@ export function Footer() {
             </div>
             <div className="flex items-center gap-3 text-sm text-slate-300 font-medium">
               <Phone className="w-5 h-5 text-[#c59b27] shrink-0" />
-              <a href="tel:+918796020860" className="hover:text-[#c59b27] transition">+91 87960 20860</a>
+              <a href="tel:+919315309289" className="hover:text-[#c59b27] transition">+91 93153 09289</a>
             </div>
             <div className="flex items-center gap-3 text-sm text-slate-300 font-medium">
               <Mail className="w-5 h-5 text-[#c59b27] shrink-0" />
-              <a href="mailto:ceramicbazaar@gmail.com" className="hover:text-[#c59b27] transition">ceramicbazaar@gmail.com</a>
+              <a href="mailto:ceramicbazaar0@gmail.com" className="hover:text-[#c59b27] transition">ceramicbazaar0@gmail.com</a>
             </div>
             <div className="flex items-start gap-3 text-sm text-slate-300 font-medium">
               <Clock className="w-5 h-5 text-[#c59b27] shrink-0 mt-0.5" />

@@ -237,7 +237,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 <p className="text-[10px] text-slate-300">We are here to help you!</p>
               </div>
               <a
-                href="https://wa.me/918796020860"
+                href="https://wa.me/919315309289"
                 target="_blank"
                 rel="noreferrer"
                 className="block w-full"
