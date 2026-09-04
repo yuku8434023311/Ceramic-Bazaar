@@ -3,9 +3,11 @@ import { requireAdmin } from "@/lib/admin-check";
 import fs from "fs";
 import path from "path";
 
+import os from "os";
+
 export const dynamic = "force-dynamic";
 
-const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), "..", "electro_bazaar_data");
+const DATA_DIR = process.env.DATA_DIR || (process.env.VERCEL ? path.join(os.tmpdir(), "ceramic_bazaar_data") : path.join(process.cwd(), "ceramic_bazaar_data"));
 const INVOICES_FILE = path.join(DATA_DIR, "custom-invoices.json");
 
 function getStoredInvoices(): any[] {
@@ -19,10 +21,14 @@ function getStoredInvoices(): any[] {
 }
 
 function saveInvoices(invoices: any[]) {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    fs.writeFileSync(INVOICES_FILE, JSON.stringify(invoices, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("Failed to save custom invoices locally:", err);
   }
-  fs.writeFileSync(INVOICES_FILE, JSON.stringify(invoices, null, 2), "utf-8");
 }
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {

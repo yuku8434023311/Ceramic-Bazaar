@@ -6,23 +6,33 @@ import os from 'os';
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 dotenv.config();
 
+// Fallback Ceramic Bazaar Firebase credentials
+const CERAMIC_PROJECT_ID = "ceramic-bazaar";
+const CERAMIC_CLIENT_EMAIL = "firebase-adminsdk-fbsvc@ceramic-bazaar.iam.gserviceaccount.com";
+const CERAMIC_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvuw6XH0J2j/j+\nn3yTIPSXZd7Hwqif04gY6Z3w3EbzpGbzWhr6JqJXpgTXhMHYSXDhojLwl75g1v7E\ne0elNoD713LspGs6grKW9roizyoamGD4vHkd3vsbC4YHolTgZnuQeRAK2F0ccUYj\nwsUVLwP2ZqZPsO/y0cMcB7NhNbM1fjr/8TJHqVSvneHYyotzlxSHXwtz6lXIQk4B\neuNCyEkW4t+ZYeKJtHb3AmkPVfXiUzmMRUEhks+kRoyCo5xw0FzqqEIgG5yxkiyG\nwJolcVnR5dt9CbLHm3IZHzZ0bs6s2pg+f9xsVYziQu2BeIJRnlmkZK7koj6g7qeV\nNKCCN/7XAgMBAAECggEAQ+pu5qAJr0nQSRP5cOFlNlgEJD8KrY5yxHIRfQOdFk+9\nDCMQVwp0Zpx+tY6U3lLv4fwuZMa4qLOeze/5ThRFAFARlfyrhnb5r5eWc5qOIq4u\nmCM7SfyiHp8zAyNNW1awPbNULGTXg4URvwNo6Nl9Vg7xCs6OxdEk72HYhWLcKnlE\n3sWib8hsprNm9MlgCw1mddhYt4DLyb6+55NkM3syXG7TnO14zNNucuM3kVFSWIZ3\nkMzoXQdLnRH83ckz9YFDcV7uxQy7bQja85Ouii2sQd7katMjD8c+2kC3KOfj4Zcw\n1cw0IF2hdIoVGulT/hDpoLcwxZ1R79RZC7YuLerBvQKBgQDjGGxIk/MACv8O10AK\nELAEm4Pl2cKzC/L1Jl+sXbJ8LpON38PXGAQwZUHP8ikozhJ7Uhnm03vaJv3FnaMl\nuo5V7m3E6/zBy8dER6f8Mjk7M3GaKVXdYlwbSSY+ElFlfBG1ZJg8OUqEExGg/Xtc\nSc/YznYWI6pl/QV8BQ96imReYwKBgQDGGP0hergcNAaX21kAimRXOFLuf9C7Kgxm\njY0DeIPF97I2bEgFJPFJkr28++nRrzp15b/SGJsanpi4bF8s/OzW36lotiEaqo/G\ndXTS32wQ8D1w46Nw3DDYFVj9TJdTdIrnj66m/Z++Stf0dOy9kZVzhfDDysvlBSOd\nw3zDe4yd/QKBgQDN5GS4YLrd/RpGQE2lUn/jjYPGLuphHqJGNWZkhga+pBPPe2K5\nbuLNZeCHQgyjHEKRYFxvdKpDnTpTopo6KKvHqQYIldRxd+nQNA9PjdFppTiIBpX8\nw6Kycl2jxUPa+OOtS+jiISc4G3nONkNT5u/0pytU4z0ofoAscwIXncVl9QKBgCMv\n4x6kRrmzwAwPSULgUixv88Mrbu8f6+33bLnWGUn70mr6VtybEETqTMuZz5GQV4kD\nk0wFVN+oliYEEe/SyVrthZD08PJko38z89lVGEP1+GPp+2kbo41uVU1A4oxPYjD5\ng6Nj35EUiEGC115g0rQfcYHFruvyOr5WL/4lHvgdAoGAP/QuMDCxB30PYRLlgvv5\nF6fJgUPWm2E5iAkabR2qQ4p0jyOCsBVf12VkG+jzdPsdsnINN53mJ5hxYEH5gHPi\nwnO61tvgI0/By18i6E0SRdKfBtKSNMKlKfnwKp8dzKtyWrYyFlUC9dOh6NFlb1jH\nb5fVt3ichK1pnPGtRzk02Yk=\n-----END PRIVATE KEY-----`;
+
+function cleanPrivateKey(key?: string): string | undefined {
+  if (!key) return undefined;
+  let clean = key.trim();
+  if ((clean.startsWith('"') && clean.endsWith('"')) || (clean.startsWith("'") && clean.endsWith("'"))) {
+    clean = clean.substring(1, clean.length - 1);
+  }
+  return clean.replace(/\\n/g, '\n');
+}
+
 // Set up Firebase Admin SDK
 let admin: any = null;
 let firestore: any = null;
 let useFirestore = false;
 
 try {
-  // We dynamically load firebase-admin to avoid startup issues if dependencies are still installing
   admin = require('firebase-admin');
   
-  let projectId = process.env.FIREBASE_PROJECT_ID;
-  let clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+  let projectId = process.env.FIREBASE_PROJECT_ID || CERAMIC_PROJECT_ID;
+  let clientEmail = process.env.FIREBASE_CLIENT_EMAIL || CERAMIC_CLIENT_EMAIL;
+  let privateKey = cleanPrivateKey(process.env.FIREBASE_PRIVATE_KEY) || CERAMIC_PRIVATE_KEY;
 
-  // Try loading directly from serviceAccountKey.json file inside the app only if env vars are missing
   if (!projectId || !clientEmail || !privateKey) {
-    // We construct the filename dynamically to prevent Next.js NFT (Next File Tracer)
-    // from statically tracing and copying serviceAccountKey.json into the build standalone folder.
     const filenameParts = ['serviceAccountKey', 'json'];
     const serviceAccountPath = path.resolve(process.cwd(), filenameParts.join('.'));
     if (fs.existsSync(serviceAccountPath)) {
@@ -31,12 +41,9 @@ try {
         if (serviceAccount.project_id && serviceAccount.client_email && serviceAccount.private_key) {
           projectId = serviceAccount.project_id;
           clientEmail = serviceAccount.client_email;
-          privateKey = serviceAccount.private_key;
-          console.log('📦 Loaded Firebase credentials from local serviceAccountKey.json');
+          privateKey = cleanPrivateKey(serviceAccount.private_key) || CERAMIC_PRIVATE_KEY;
         }
-      } catch (e: any) {
-        console.warn('⚠️ Found serviceAccountKey.json but failed to parse:', e.message || e);
-      }
+      } catch (e: any) {}
     }
   }
 
@@ -46,39 +53,28 @@ try {
         credential: admin.credential.cert({
           projectId,
           clientEmail,
-          privateKey: privateKey.replace(/\\n/g, '\n'),
+          privateKey,
         }),
-        storageBucket: process.env.FIREBASE_STORAGE_BUCKET || `${projectId}.appspot.com`,
+        storageBucket: process.env.FIREBASE_STORAGE_BUCKET || `${projectId}.firebasestorage.app`,
       });
       console.log('🔥 Initialized Firebase Admin SDK successfully.');
     } else if (process.env.FIRESTORE_EMULATOR_HOST) {
       admin.initializeApp({
         projectId: projectId || 'demo-project',
       });
-      console.log('🔥 Initialized Firebase Admin SDK in Emulator Mode.');
-    } else {
-      console.warn('⚠️ Firebase credentials not configured. Firebase features like Admin SDK might be unavailable.');
     }
   }
 
   if (admin.apps.length) {
-    if (process.env.USE_FIRESTORE === 'true' || (!process.env.USE_FIRESTORE && process.env.NODE_ENV === 'production') || (projectId && clientEmail && privateKey)) {
-      firestore = admin.firestore();
-      useFirestore = true;
-      console.log('🔥 Connected to Firebase Firestore in the Cloud.');
-    } else if (process.env.FIRESTORE_EMULATOR_HOST) {
-      firestore = admin.firestore();
-      useFirestore = true;
-      console.log('🔥 Connected to local Firebase Firestore Emulator.');
-    } else {
-      console.log('ℹ️ Firebase Firestore is disabled. Using local file database (firebase-mock.json).');
-    }
+    firestore = admin.firestore();
+    useFirestore = true;
+    console.log('🔥 Connected to Firebase Firestore in the Cloud.');
   }
 } catch (err: any) {
   console.warn('⚠️ Could not load firebase-admin or initialize:', err.message || err);
 }
 
-// Local file database fallback engine
+// Local file database fallback engine (Serverless Safe)
 class LocalFileDb {
   private filePath: string;
   private data: Record<string, any[]> = {};
@@ -86,75 +82,44 @@ class LocalFileDb {
   private lastCheckTime = 0;
 
   constructor() {
+    const isVercel = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NOW_REGION);
     const envPath = process.env.DATABASE_PATH;
+    
     if (envPath) {
       this.filePath = path.resolve(envPath);
-    } else {
-      // By default, check if we are on cPanel/Linux/Production
-      // We look for typical indications of a hosting environment or production
-      const isProduction = process.env.NODE_ENV === 'production';
-      const isLinux = process.platform === 'linux';
-      
-      if (isProduction || isLinux) {
-        // Use a persistent directory outside public_html to prevent overwrite during deployment
-        const homeDir = os.homedir();
-        const persistentDir = path.join(homeDir, 'electro_bazaar_data');
-        const persistentPath = path.join(persistentDir, 'firebase-mock.json');
-        
-        // Ensure directory exists
-        if (!fs.existsSync(persistentDir)) {
-          fs.mkdirSync(persistentDir, { recursive: true });
-        }
-        
-        // Auto-migration: if persistent file doesn't exist, check if local project file exists to copy/migrate it
-        if (!fs.existsSync(persistentPath)) {
-          const localPath = path.resolve(process.cwd(), 'firebase-mock.json');
-          if (fs.existsSync(localPath)) {
-            try {
-              fs.copyFileSync(localPath, persistentPath);
-              console.log(`🚚 Migrated existing database file from ${localPath} to ${persistentPath}`);
-            } catch (copyErr) {
-              console.warn('⚠️ Failed to migrate local database file:', copyErr);
-            }
+    } else if (isVercel) {
+      // Vercel serverless runtime: use writable /tmp folder
+      this.filePath = path.join(os.tmpdir(), 'ceramic_bazaar_mock.json');
+      try {
+        if (!fs.existsSync(this.filePath)) {
+          const localSeed = path.resolve(process.cwd(), 'firebase-mock.json');
+          if (fs.existsSync(localSeed)) {
+            fs.copyFileSync(localSeed, this.filePath);
           }
         }
-        
-        this.filePath = persistentPath;
-        console.log(`📦 Using persistent local file database at: ${this.filePath}`);
-      } else {
-        // Local development: keep it in the project root
+      } catch (err) {
         this.filePath = path.resolve(process.cwd(), 'firebase-mock.json');
-        console.log(`💻 Using development local file database at: ${this.filePath}`);
       }
+    } else {
+      this.filePath = path.resolve(process.cwd(), 'firebase-mock.json');
     }
     this.load();
   }
 
   private load() {
-    if (fs.existsSync(this.filePath)) {
-      try {
-        const stats = fs.statSync(this.filePath);
-        this.lastMtime = stats.mtimeMs;
-        this.lastCheckTime = Date.now();
-        this.data = JSON.parse(fs.readFileSync(this.filePath, 'utf8'));
-        // Automatically make sure all existing products have isActive set to true if not defined
-        if (this.data && Array.isArray(this.data.products)) {
-          let updated = false;
-          this.data.products.forEach((p: any) => {
-            if (p.isActive === undefined) {
-              p.isActive = true;
-              updated = true;
-            }
-          });
-          if (updated) {
-            this.save();
-            console.log(`⚡ Auto-migrated ${this.data.products.length} products to ensure they have isActive: true`);
-          }
+    try {
+      if (fs.existsSync(this.filePath)) {
+        const content = fs.readFileSync(this.filePath, 'utf8');
+        this.data = JSON.parse(content);
+      } else {
+        const rootMock = path.resolve(process.cwd(), 'firebase-mock.json');
+        if (fs.existsSync(rootMock)) {
+          this.data = JSON.parse(fs.readFileSync(rootMock, 'utf8'));
+        } else {
+          this.data = {};
         }
-      } catch (e) {
-        if (!this.data) this.data = {};
       }
-    } else {
+    } catch (e) {
       this.data = {};
     }
   }
@@ -166,29 +131,14 @@ class LocalFileDb {
         fs.mkdirSync(dir, { recursive: true });
       }
       fs.writeFileSync(this.filePath, JSON.stringify(this.data, null, 2), 'utf8');
-      if (fs.existsSync(this.filePath)) {
-        this.lastMtime = fs.statSync(this.filePath).mtimeMs;
-      }
-      this.lastCheckTime = Date.now();
-      console.log(`✅ Saved local file database to: ${this.filePath}`);
     } catch (e: any) {
-      console.error('❌ Error saving local file database:', e);
-      throw new Error(`Failed to write to local database file: ${e.message || e}`);
+      // Non-fatal on serverless
     }
   }
 
   getCollection(name: string): any[] {
-    const now = Date.now();
-    if (!this.data[name] || now - this.lastCheckTime > 10000) {
-      this.lastCheckTime = now;
-      if (fs.existsSync(this.filePath)) {
-        try {
-          const stats = fs.statSync(this.filePath);
-          if (stats.mtimeMs > this.lastMtime) {
-            this.load();
-          }
-        } catch (e) {}
-      }
+    if (!this.data[name]) {
+      this.load();
     }
     if (!this.data[name]) {
       this.data[name] = [];

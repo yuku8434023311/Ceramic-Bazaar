@@ -23,7 +23,11 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://ceramicbazaar.com'),
+  metadataBase: new URL(
+    process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || 'https://ceramic-bazaar.vercel.app'
+  ),
   title: 'Ceramic Bazaar - Premium Tiles, Sanitary Ware & Home Improvement',
   description: 'Shop premium tiles, sanitary ware, bathroom fittings, granite, marble, plumbing, hardware & tools at wholesale prices from Ceramic Bazaar.',
   icons: { 
