@@ -8,9 +8,9 @@ async function deleteFromCloudinary(url: string) {
   try {
     if (!url || !url.includes("cloudinary.com")) return;
 
-    const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || "ddtdwao8r";
-    const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY || "158197268248366";
-    const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET || "7ml-7Xl0KxIMIxuMKeMQxAlJNAE";
+    const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || "gvztumva";
+    const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY || "463675371193684";
+    const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET || "HsfX8wkYX4qtIzfunkBihYj_XXE";
 
     // Format: https://res.cloudinary.com/[cloud_name]/[resource_type]/upload/v[version]/[public_id]
     const rawMatch = url.match(/\/raw\/upload\/(?:v\d+\/)?([^\s?#]+)/);

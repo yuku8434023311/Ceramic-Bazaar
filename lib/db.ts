@@ -62,7 +62,7 @@ try {
   }
 
   if (admin.apps.length) {
-    if (process.env.USE_FIRESTORE === 'true') {
+    if (process.env.USE_FIRESTORE === 'true' || (!process.env.USE_FIRESTORE && process.env.NODE_ENV === 'production') || (projectId && clientEmail && privateKey)) {
       firestore = admin.firestore();
       useFirestore = true;
       console.log('🔥 Connected to Firebase Firestore in the Cloud.');
@@ -71,7 +71,7 @@ try {
       useFirestore = true;
       console.log('🔥 Connected to local Firebase Firestore Emulator.');
     } else {
-      console.log('ℹ️ Firebase Firestore is disabled (USE_FIRESTORE is not set to "true"). Using local file database (firebase-mock.json).');
+      console.log('ℹ️ Firebase Firestore is disabled. Using local file database (firebase-mock.json).');
     }
   }
 } catch (err: any) {

@@ -5,15 +5,15 @@ import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
 
-// Cloudinary credentials — works on Netlify serverless & cPanel Node.js
+// Cloudinary credentials — works on Vercel serverless & Node.js
 const CLOUDINARY_CLOUD_NAME =
-  process.env.CLOUDINARY_CLOUD_NAME || "ddtdwao8r";
+  process.env.CLOUDINARY_CLOUD_NAME || "gvztumva";
 const CLOUDINARY_UPLOAD_PRESET =
-  process.env.CLOUDINARY_UPLOAD_PRESET || "electro_bazaar_uploads";
+  process.env.CLOUDINARY_UPLOAD_PRESET || "ceramic_bazaar_uploads";
 const CLOUDINARY_API_KEY =
-  process.env.CLOUDINARY_API_KEY || "158197268248366";
+  process.env.CLOUDINARY_API_KEY || "463675371193684";
 const CLOUDINARY_API_SECRET =
-  process.env.CLOUDINARY_API_SECRET || "7ml-7Xl0KxIMIxuMKeMQxAlJNAE";
+  process.env.CLOUDINARY_API_SECRET || "HsfX8wkYX4qtIzfunkBihYj_XXE";
 
 async function uploadToCloudinary(
   fileBytes: ArrayBuffer,
