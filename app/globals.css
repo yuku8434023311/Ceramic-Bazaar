@@ -1,0 +1,275 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 150 10% 98%;
+    --foreground: 177 75% 9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 177 75% 9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 177 75% 9%;
+
+    --primary: 177 72% 9%;
+    --primary-foreground: 44 67% 95%;
+
+    --secondary: 44 67% 46%;
+    --secondary-foreground: 177 75% 9%;
+
+    --muted: 150 10% 95%;
+    --muted-foreground: 177 15% 40%;
+
+    --accent: 44 67% 46%;
+    --accent-foreground: 177 75% 9%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 150 10% 90%;
+    --input: 150 10% 88%;
+    --ring: 44 67% 46%;
+
+    --radius: 0.625rem;
+    --radius-sm: calc(0.625rem - 4px);
+    --radius-lg: calc(0.625rem + 4px);
+    --radius-full: 9999px;
+
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    --spacing-3xl: 64px;
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03), 0 1px 3px 0 rgb(0 0 0 / 0.06);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+
+    --duration-fast: 150ms;
+    --duration-normal: 250ms;
+    --duration-slow: 350ms;
+
+    --chart-1: 177 72% 15%;
+    --chart-2: 44 67% 46%;
+    --chart-3: 24 95% 53%;
+    --chart-4: 177 40% 35%;
+    --chart-5: 142 71% 45%;
+  }
+
+  .dark {
+    --background: 222 47% 8%;
+    --foreground: 0 0% 98%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 222 47% 17%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 222 47% 14%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 199 89% 48%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 222 47% 17%;
+    --input: 222 47% 17%;
+    --ring: 199 89% 48%;
+
+    --chart-1: 199 89% 60%;
+    --chart-2: 280 65% 60%;
+    --chart-3: 24 95% 53%;
+    --chart-4: 142 71% 45%;
+    --chart-5: 0 84% 60%;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  * { 
+    border-color: hsl(var(--border)); 
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    min-height: 100vh;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background-color: transparent; }
+  ::-webkit-scrollbar-thumb { background-color: hsl(var(--border)); border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background-color: hsl(var(--muted-foreground) / 0.5); }
+  [data-hydration-error] { display: none !important; }
+}
+
+@layer utilities {
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+  .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Glassmorphism */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  .glass-dark {
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  /* Animated gradient background */
+  .gradient-bg {
+    background: linear-gradient(-45deg, #0f172a, #1e3a8a, #312e81, #0891b2, #1e40af);
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+  }
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .text-gradient {
+    background: linear-gradient(90deg, #0ea5e9, #6366f1, #a855f7);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-gold {
+    color: #c59b27;
+  }
+
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #fff2be 0%, #d4af37 50%, #c59b27 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero-luxury-gradient {
+    background: radial-gradient(circle at 75% 30%, #0d4a47 0%, #062524 50%, #031716 100%);
+  }
+
+  .border-gold-subtle {
+    border-color: rgba(197, 155, 39, 0.28);
+  }
+
+  .gold-glow {
+    box-shadow: 0 0 25px rgba(197, 155, 39, 0.3);
+  }
+
+  .product-card-shadow { 
+    box-shadow: 0 2px 12px -2px rgba(0, 0, 0, 0.06), 0 1px 3px 0 rgba(0, 0, 0, 0.04); 
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  .product-card-shadow:hover { 
+    box-shadow: 0 12px 28px -6px rgba(6, 37, 36, 0.12), 0 4px 10px -2px rgba(197, 155, 39, 0.15); 
+    border-color: rgba(197, 155, 39, 0.35);
+  }
+
+  @keyframes blob-move {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+  }
+  .animate-blob { animation: blob-move 7s ease-in-out infinite; }
+  .animation-delay-2000 { animation-delay: 2s; }
+  .animation-delay-4000 { animation-delay: 4s; }
+
+  .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
+}
+
+/* Override Tailwind .animate-pulse to make it smoother and faster */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 1s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+/* Safe Area (notch / status bar / gesture bar) support for Capacitor APK */
+@supports (padding-top: env(safe-area-inset-top)) {
+  /* Push down the main sticky header and admin header */
+  header {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 0.75rem) !important;
+  }
+
+  /* Push up the bottom nav to clear the home gesture bar/pill */
+  nav.fixed.bottom-0 {
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  }
+
+  /* Make sure drawers (SheetContent) also respect safe area top & bottom */
+  .SheetContent,
+  [data-radix-dialog-content],
+  [role="dialog"] {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 1.5rem) !important;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.5rem) !important;
+  }
+
+  /* App Biometric lock wrapper spacing */
+  .fixed.inset-0.z-\[9999\] {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  }
+}
+
+/* Capacitor APK specific safe-area override styling */
+.platform-capacitor header {
+  padding-top: calc(max(24px, env(safe-area-inset-top, 0px)) + 0.75rem) !important;
+}
+
+.platform-capacitor aside.fixed {
+  top: calc(max(24px, env(safe-area-inset-top, 0px)) + 52px) !important;
+  height: calc(100dvh - (max(24px, env(safe-area-inset-top, 0px)) + 52px)) !important;
+  padding-bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 0.5rem) !important;
+}
+
