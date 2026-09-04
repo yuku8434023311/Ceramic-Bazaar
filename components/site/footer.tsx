@@ -26,9 +26,9 @@ export function Footer() {
               • Everything You Need, All in One Place. •
             </p>
             <p className="text-sm text-slate-300 leading-relaxed font-medium">
-              We are your one-stop destination for premium tiles, sanitary ware,
-              bathroom fittings, granite, plumbing, hardware, paints & more at
-              wholesale prices.
+              We are your one-stop destination for 100% genuine CERA sanitaryware,
+              luxury one-piece EWCs, wall-hung toilets, designer wash basins, and bathroom
+              suites at wholesale prices.
             </p>
             {/* Social Media Icons */}
             <div className="flex items-center gap-3 pt-2">
@@ -132,43 +132,38 @@ export function Footer() {
             </h3>
             <ul className="space-y-2.5 text-sm text-slate-300 font-medium">
               <li>
-                <Link href="/products?category=tiles" className="hover:text-[#c59b27] transition">
-                  Tiles
+                <Link href="/products?category=sanitary-ware" className="hover:text-[#c59b27] transition font-bold text-white">
+                  Sanitaryware
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=sanitary-ware" className="hover:text-[#c59b27] transition">
-                  Sanitary Ware
+                <Link href="/products?category=wash-basins" className="hover:text-[#c59b27] transition font-bold text-white">
+                  Wash Basins
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=bathroom-fittings" className="hover:text-[#c59b27] transition">
-                  Bathroom Fittings
+                <Link href="/products?search=One-Piece" className="hover:text-[#c59b27] transition">
+                  One-Piece Toilets
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=granite-marble" className="hover:text-[#c59b27] transition">
-                  Granite & Marble
+                <Link href="/products?search=Wall-Hung" className="hover:text-[#c59b27] transition">
+                  Wall-Hung EWCs
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=plumbing-hardware" className="hover:text-[#c59b27] transition">
-                  Plumbing & Hardware
+                <Link href="/products?search=Table+Top" className="hover:text-[#c59b27] transition">
+                  Table Top Basins
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=paints" className="hover:text-[#c59b27] transition">
-                  Paints
+                <Link href="/products?search=Pedestal" className="hover:text-[#c59b27] transition">
+                  Pedestal Basins
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=tools" className="text-[#c59b27] font-bold hover:underline transition">
-                  Tools
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=kitchen-sinks" className="hover:text-[#c59b27] transition">
-                  Kitchen Sinks
+                <Link href="/products?search=Urinal" className="hover:text-[#c59b27] transition">
+                  Urinals & Cisterns
                 </Link>
               </li>
             </ul>

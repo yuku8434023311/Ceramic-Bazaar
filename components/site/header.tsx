@@ -39,14 +39,8 @@ import { getGuestCartCount } from "@/lib/cart-local";
 type Category = { id: string; name: string; slug: string };
 
 const CERAMIC_CATEGORIES: Category[] = [
-  { id: "tiles", name: "Tiles", slug: "tiles" },
-  { id: "sanitary-ware", name: "Sanitary Ware", slug: "sanitary-ware" },
-  { id: "bathroom-fittings", name: "Bathroom Fittings", slug: "bathroom-fittings" },
-  { id: "granite-marble", name: "Granite & Marble", slug: "granite-marble" },
-  { id: "plumbing-hardware", name: "Plumbing & Hardware", slug: "plumbing-hardware" },
-  { id: "paints", name: "Paints", slug: "paints" },
-  { id: "tools", name: "Tools", slug: "tools" },
-  { id: "kitchen-sinks", name: "Kitchen Sinks", slug: "kitchen-sinks" },
+  { id: "cat_sanitary", name: "Sanitaryware", slug: "sanitary-ware" },
+  { id: "cat_wash_basins", name: "Wash Basins", slug: "wash-basins" },
 ];
 
 export function Header() {
@@ -234,7 +228,7 @@ export function Header() {
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search for tiles, sanitary ware, bathroom fittings, marble..."
+                placeholder="Search CERA toilets, wash basins, urinals, cisterns..."
                 className="w-full pl-4 pr-3 py-2.5 text-sm sm:text-base border-none shadow-none focus-visible:ring-0 placeholder:text-slate-400 font-medium h-11"
               />
             </div>
@@ -388,7 +382,7 @@ export function Header() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search tiles, sanitary, fittings..."
+              placeholder="Search CERA sanitaryware, wash basins..."
               className="pl-10 pr-3 py-2 text-sm bg-slate-100 border-slate-300 rounded-lg"
             />
           </div>
