@@ -122,6 +122,11 @@ export function Footer() {
                   Contact Us
                 </Link>
               </li>
+              <li>
+                <Link href="/download" className="text-[#c59b27] font-bold hover:text-white transition flex items-center gap-1.5">
+                  <span>📱 Download Android App</span>
+                </Link>
+              </li>
             </ul>
           </div>
 

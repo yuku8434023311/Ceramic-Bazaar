@@ -22,6 +22,8 @@ import {
   Store,
   ArrowRight,
   LayoutDashboard,
+  Smartphone,
+  Download,
 } from "lucide-react";
 import { Logo } from "./logo";
 import { Button } from "@/components/ui/button";
@@ -117,6 +119,7 @@ export function Header() {
     { href: "/offers", label: "Offers" },
     { href: "/products?filter=new", label: "New Arrivals" },
     { href: "/products?filter=bestsellers", label: "Best Sellers" },
+    { href: "/download", label: "📱 Download Android App" },
     { href: "/support#about", label: "About Us" },
     { href: "/support#contact", label: "Contact Us" },
   ];
@@ -140,6 +143,14 @@ export function Header() {
 
           {/* Right Links */}
           <div className="flex items-center gap-3 sm:gap-6 text-[11px] sm:text-sm font-semibold text-slate-200 shrink-0">
+            <Link
+              href="/download"
+              className="bg-[#c59b27] hover:bg-[#b38820] text-slate-950 px-2.5 py-0.5 rounded-full font-black text-[11px] sm:text-xs flex items-center gap-1 transition shadow-sm"
+            >
+              <Smartphone className="w-3.5 h-3.5" />
+              <span>Get App (.APK)</span>
+            </Link>
+            <span className="text-slate-600 hidden sm:inline">•</span>
             <Link
               href="/orders"
               className="hover:text-[#c59b27] flex items-center gap-1.5 transition-colors"
@@ -181,6 +192,26 @@ export function Header() {
               <SheetContent side="left" className="w-[320px] bg-white h-full overflow-y-auto p-6">
                 <div className="flex flex-col gap-6 mt-2">
                   <Logo size="md" />
+
+                  {/* Mobile App Download Button */}
+                  <div className="p-3.5 bg-gradient-to-r from-[#031716] to-[#062524] rounded-2xl border border-[#0d4a47] text-white">
+                    <div className="flex items-center gap-2 mb-1 text-[#c59b27] font-black text-xs">
+                      <Smartphone className="w-4 h-4" />
+                      <span>Android App</span>
+                    </div>
+                    <p className="text-[11px] text-slate-300 font-medium mb-2.5">
+                      Fast 60FPS shopping with wholesale prices
+                    </p>
+                    <a
+                      href="/ceramic-bazaar.apk"
+                      download="ceramic-bazaar.apk"
+                      className="w-full bg-[#c59b27] hover:bg-[#b38820] text-slate-950 font-black text-xs py-2 rounded-lg flex items-center justify-center gap-1.5 shadow"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Download APK (9.7 MB)</span>
+                    </a>
+                  </div>
+
                   <div className="flex flex-col gap-1">
                     {navMenuLinks.map((l) => (
                       <Link
@@ -471,6 +502,17 @@ export function Header() {
               className="text-sm sm:text-[15px] font-bold tracking-wide text-slate-100 hover:text-[#c59b27] transition-colors whitespace-nowrap px-1 py-1"
             >
               Contact Us
+            </Link>
+            <Link
+              href="/download"
+              className={`text-sm sm:text-[15px] font-bold tracking-wide transition-colors whitespace-nowrap px-1 py-1 flex items-center gap-1.5 ${
+                pathname === "/download"
+                  ? "text-[#c59b27] border-b-2 border-[#c59b27]"
+                  : "text-[#c59b27] hover:text-white"
+              }`}
+            >
+              <Smartphone className="w-4 h-4" />
+              <span>Get App</span>
             </Link>
           </div>
 

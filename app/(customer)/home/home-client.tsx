@@ -18,6 +18,9 @@ import {
   Boxes,
   Award,
   ExternalLink,
+  Download,
+  Smartphone,
+  QrCode,
 } from "lucide-react";
 import { ProductCard } from "@/components/site/product-card";
 
@@ -620,6 +623,81 @@ export function HomeClient({
                 <span>Get Google Maps Directions</span>
                 <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. DOWNLOAD ANDROID APP BANNER SECTION */}
+      <section className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 py-6 sm:py-8 w-full overflow-hidden">
+        <div className="bg-gradient-to-r from-[#031716] via-[#062524] to-[#041d1b] rounded-3xl p-6 sm:p-10 border-2 border-[#c59b27]/40 shadow-2xl relative overflow-hidden">
+          {/* Ambient Gold Glow */}
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#c59b27]/15 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Left Content */}
+            <div className="lg:col-span-8 space-y-4">
+              <div className="inline-flex items-center gap-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#c59b27] bg-[#c59b27]/20 px-3 py-1 rounded-full border border-[#c59b27]/40">
+                <Smartphone className="w-3.5 h-3.5 text-[#c59b27]" />
+                Download Ceramic Bazaar Official Android App
+              </div>
+              
+              <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight uppercase leading-tight">
+                Get Direct Wholesale Rates <br />
+                <span className="text-[#c59b27]">On Your Mobile Phone</span>
+              </h2>
+
+              <p className="text-xs sm:text-base text-slate-200 font-medium max-w-2xl leading-relaxed">
+                Install the official Ceramic Bazaar APK for superfast browsing, instant WhatsApp order inquiries, live order tracking, and exclusive discounts on all 246+ CERA sanitaryware and wash basins.
+              </p>
+
+              {/* Feature Tags */}
+              <div className="flex flex-wrap items-center gap-2.5 pt-1 text-xs font-bold text-slate-300">
+                <span className="bg-[#031716] px-3 py-1 rounded-lg border border-[#0d4a47] flex items-center gap-1.5 text-white">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> 100% Virus-Free APK
+                </span>
+                <span className="bg-[#031716] px-3 py-1 rounded-lg border border-[#0d4a47] text-white">
+                  File Size: <strong className="text-[#c59b27]">9.7 MB</strong>
+                </span>
+                <span className="bg-[#031716] px-3 py-1 rounded-lg border border-[#0d4a47] text-white">
+                  Android 7.0 & Higher
+                </span>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <a
+                  href="/ceramic-bazaar.apk"
+                  download="ceramic-bazaar.apk"
+                  className="bg-[#c59b27] hover:bg-[#b38820] active:scale-95 text-slate-950 font-black text-xs sm:text-sm px-6 py-3 rounded-xl shadow-xl flex items-center gap-2.5 transition-all"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download APK Now (9.7 MB)</span>
+                </a>
+
+                <Link
+                  href="/download"
+                  className="border-2 border-white/50 hover:border-white hover:bg-white/10 active:scale-95 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-xl flex items-center gap-2 transition-all backdrop-blur-sm"
+                >
+                  <span>Installation Guide & QR</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Right QR Box */}
+            <div className="lg:col-span-4 flex justify-center lg:justify-end">
+              <div className="bg-white rounded-2xl p-5 text-center shadow-xl border-2 border-[#c59b27] max-w-[220px] w-full">
+                <div className="p-2 bg-slate-50 border border-slate-200 rounded-xl mb-2 flex items-center justify-center">
+                  <img
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=https%3A%2F%2Fceramic-bazaar.vercel.app%2Fceramic-bazaar.apk"
+                    alt="Download App QR Code"
+                    className="w-32 h-32 object-contain"
+                  />
+                </div>
+                <p className="text-[11px] font-black text-slate-900 leading-tight">Scan with Phone</p>
+                <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Instant APK Download</p>
+              </div>
             </div>
           </div>
         </div>

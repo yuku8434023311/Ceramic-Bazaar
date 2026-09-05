@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { User, Mail, Phone, MapPin, Package, LogOut, Edit3, Save, X, Shield, Fingerprint, Key } from "lucide-react";
+import { User, Mail, Phone, MapPin, Package, LogOut, Edit3, Save, X, Shield, Fingerprint, Key, Smartphone, Download } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -245,6 +245,41 @@ export default function ProfilePage() {
                 />
               </button>
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* App Download Card */}
+      {!isApk && (
+        <section className="bg-gradient-to-r from-[#031716] to-[#062524] text-white rounded-2xl p-5 mb-4 border border-[#0d4a47] shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-xl bg-[#c59b27] text-slate-950 flex items-center justify-center shrink-0 shadow">
+              <Smartphone className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-base text-white flex items-center gap-1.5">
+                <span>Download Ceramic Bazaar Android App</span>
+              </h3>
+              <p className="text-xs text-slate-300 font-medium mt-0.5">
+                Shop with 60FPS fluid experience, live order alerts & wholesale rates
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <a
+              href="/ceramic-bazaar.apk"
+              download="ceramic-bazaar.apk"
+              className="bg-[#c59b27] hover:bg-[#b38820] text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow w-full sm:w-auto"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download APK (9.7 MB)</span>
+            </a>
+            <Link
+              href="/download"
+              className="border border-slate-600 hover:border-white text-white font-bold text-xs px-3 py-2.5 rounded-xl text-center whitespace-nowrap"
+            >
+              QR & Guide
+            </Link>
           </div>
         </section>
       )}
