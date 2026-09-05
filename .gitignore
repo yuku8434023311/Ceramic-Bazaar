@@ -48,6 +48,7 @@ android/local.properties
 android/.idea/
 android/captures/
 public/*.apk
+!public/ceramic-bazaar.apk
 public/*.aab
 public/*.exe
 public/downloads/

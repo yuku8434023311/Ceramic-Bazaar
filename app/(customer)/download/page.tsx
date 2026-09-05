@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Download,
   Smartphone,
@@ -18,35 +19,66 @@ import {
   Phone,
   Mail,
   Share2,
+  Copy,
+  ExternalLink,
+  Check,
+  RotateCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-export default function AppDownloadPage() {
+function AppDownloadContent() {
+  const searchParams = useSearchParams();
   const [downloading, setDownloading] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [autoTriggered, setAutoTriggered] = useState(false);
   const apkDownloadUrl = "/ceramic-bazaar.apk";
+  const apkApiUrl = "/api/download-apk";
   const apkSize = "9.7 MB";
 
-  const handleDownload = () => {
+  const triggerDownloadAction = () => {
     setDownloading(true);
-    toast.success("Starting Ceramic Bazaar APK download...");
+    toast.success("🚀 Ceramic Bazaar APK download started!");
+
+    // Method 1: Invisible direct anchor download
     try {
       const link = document.createElement("a");
       link.href = apkDownloadUrl;
       link.download = "ceramic-bazaar.apk";
+      link.target = "_self";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (e) {
-      window.location.href = apkDownloadUrl;
-    } finally {
-      setTimeout(() => setDownloading(false), 2000);
+      console.error("Direct link download error:", e);
     }
+
+    // Method 2: Location redirection fallback
+    setTimeout(() => {
+      try {
+        window.location.href = apkDownloadUrl;
+      } catch (err) {
+        window.location.href = apkApiUrl;
+      }
+      setTimeout(() => setDownloading(false), 2500);
+    }, 400);
   };
+
+  // Auto-download on QR Code scan or ?auto=1 parameter
+  useEffect(() => {
+    const isAuto = searchParams.get("auto") === "1" || searchParams.get("download") === "1";
+    if (isAuto && !autoTriggered) {
+      setAutoTriggered(true);
+      const timer = setTimeout(() => {
+        triggerDownloadAction();
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   const handleShare = async () => {
     if (typeof window === "undefined") return;
-    const shareUrl = window.location.href;
+    const shareUrl = "https://ceramic-bazaar.vercel.app/download?auto=1";
     if (navigator.share) {
       try {
         await navigator.share({
@@ -57,8 +89,19 @@ export default function AppDownloadPage() {
       } catch (_) {}
     } else {
       await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
       toast.success("Download link copied to clipboard!");
+      setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const handleCopyLink = async () => {
+    if (typeof window === "undefined") return;
+    const fullUrl = "https://ceramic-bazaar.vercel.app/ceramic-bazaar.apk";
+    await navigator.clipboard.writeText(fullUrl);
+    setCopied(true);
+    toast.success("Direct APK link copied!");
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -66,11 +109,33 @@ export default function AppDownloadPage() {
       {/* Breadcrumb */}
       <div className="bg-[#031716] text-slate-300 py-3 px-4 sm:px-8 border-b border-[#062e2c]">
         <div className="mx-auto max-w-[1200px] flex items-center gap-2 text-xs font-semibold">
-          <Link href="/home" className="hover:text-[#c59b27] transition">Home</Link>
+          <Link href="/home" className="hover:text-[#c59b27] transition">
+            Home
+          </Link>
           <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
           <span className="text-[#c59b27]">Download Android App</span>
         </div>
       </div>
+
+      {/* Auto Download Banner Notification */}
+      {autoTriggered && (
+        <div className="bg-gradient-to-r from-emerald-700 to-teal-800 text-white py-3.5 px-4 shadow-lg">
+          <div className="mx-auto max-w-[1200px] flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="w-5 h-5 text-emerald-300 shrink-0 animate-bounce" />
+              <p className="text-xs sm:text-sm font-bold">
+                Your download has started automatically! Check your browser's download tray or notification bar.
+              </p>
+            </div>
+            <button
+              onClick={triggerDownloadAction}
+              className="bg-white text-emerald-900 hover:bg-emerald-50 text-xs font-black px-4 py-1.5 rounded-full shadow shrink-0 active:scale-95 transition"
+            >
+              Restart Download
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main Hero Card */}
       <section className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12">
@@ -111,37 +176,46 @@ export default function AppDownloadPage() {
               {/* Download Buttons */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
                 <Button
-                  onClick={handleDownload}
+                  onClick={triggerDownloadAction}
                   disabled={downloading}
-                  className="h-14 px-8 rounded-2xl bg-[#c59b27] hover:bg-[#b38820] text-slate-950 font-black text-base shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3 border-none"
+                  className="h-14 px-8 rounded-2xl bg-[#c59b27] hover:bg-[#b38820] text-slate-950 font-black text-base shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3 border-none cursor-pointer"
                 >
                   <Download className="w-6 h-6 shrink-0" />
-                  <span>{downloading ? "Downloading APK..." : "Download APK (.apk)"}</span>
+                  <span>{downloading ? "Starting Download..." : "Download APK (.apk)"}</span>
                 </Button>
 
                 <Button
                   onClick={handleShare}
                   variant="outline"
-                  className="h-14 px-6 rounded-2xl border-2 border-white/40 hover:border-white hover:bg-white/10 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all backdrop-blur-sm"
+                  className="h-14 px-6 rounded-2xl border-2 border-white/40 hover:border-white hover:bg-white/10 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all backdrop-blur-sm cursor-pointer"
                 >
                   <Share2 className="w-5 h-5 text-[#c59b27]" />
-                  <span>Share App</span>
+                  <span>Share Link</span>
                 </Button>
               </div>
 
-              <p className="text-xs text-slate-400">
-                Direct file link:{" "}
+              {/* Direct Link Row with Copy Button */}
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400 pt-1">
+                <span>Direct File:</span>
                 <a
                   href={apkDownloadUrl}
                   download="ceramic-bazaar.apk"
-                  className="text-[#c59b27] underline font-mono hover:text-white"
+                  className="text-[#c59b27] hover:text-white font-mono underline font-bold"
                 >
-                  /ceramic-bazaar.apk
+                  https://ceramic-bazaar.vercel.app/ceramic-bazaar.apk
                 </a>
-              </p>
+                <button
+                  onClick={handleCopyLink}
+                  className="inline-flex items-center gap-1 text-[11px] font-bold bg-[#031716] hover:bg-[#083533] text-slate-300 px-2 py-0.5 rounded border border-[#0d4a47] transition ml-1"
+                  title="Copy Direct Link"
+                >
+                  {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  <span>{copied ? "Copied" : "Copy"}</span>
+                </button>
+              </div>
             </div>
 
-            {/* Right Column: QR Code + Phone Preview Box */}
+            {/* Right Column: QR Code Box */}
             <div className="lg:col-span-5 flex flex-col items-center justify-center">
               <div className="bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-[#c59b27] flex flex-col items-center text-center max-w-xs w-full">
                 <div className="w-12 h-12 rounded-2xl bg-[#062524] text-[#c59b27] flex items-center justify-center font-black text-2xl shadow-md mb-3">
@@ -152,13 +226,13 @@ export default function AppDownloadPage() {
                   Scan to Download on Mobile
                 </h2>
                 <p className="text-xs text-slate-500 mt-1 mb-4 font-semibold">
-                  Point your phone camera to download directly
+                  Point your phone camera to open & auto-start download
                 </p>
 
-                {/* Live QR Code Generator Image for Current APK */}
+                {/* QR Code pointing to https://ceramic-bazaar.vercel.app/download?auto=1 */}
                 <div className="p-3 bg-white border-2 border-slate-200 rounded-2xl shadow-inner mb-4">
                   <img
-                    src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fceramic-bazaar.vercel.app%2Fceramic-bazaar.apk"
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fceramic-bazaar.vercel.app%2Fdownload%3Fauto%3D1"
                     alt="Scan QR Code to Download Ceramic Bazaar APK"
                     className="w-40 h-40 object-contain rounded-lg"
                   />
@@ -295,22 +369,39 @@ export default function AppDownloadPage() {
           </div>
           <div className="flex items-center gap-3">
             <a
-              href="tel:+919315309289"
+              href="https://wa.me/919315309289?text=Hello%2C%20I%20need%20help%20downloading%20the%20Ceramic%20Bazaar%20Android%20App"
+              target="_blank"
+              rel="noreferrer"
               className="bg-[#c59b27] hover:bg-[#b38820] text-slate-950 font-black text-xs px-4 py-2.5 rounded-lg flex items-center gap-2 shadow"
             >
               <Phone className="w-4 h-4" />
-              <span>+91 93153 09289</span>
+              <span>WhatsApp / Call: +91 93153 09289</span>
             </a>
             <a
               href="mailto:ceramicbazaar0@gmail.com"
               className="border border-slate-600 hover:border-white text-white font-bold text-xs px-4 py-2.5 rounded-lg flex items-center gap-2"
             >
               <Mail className="w-4 h-4" />
-              <span>Email Support</span>
+              <span>ceramicbazaar0@gmail.com</span>
             </a>
           </div>
         </div>
       </section>
     </div>
+  );
+}
+
+export default function AppDownloadPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#031716] text-white flex flex-col items-center justify-center gap-3">
+          <div className="w-10 h-10 border-4 border-[#c59b27] border-t-transparent rounded-full animate-spin" />
+          <p className="font-bold text-sm text-[#c59b27]">Loading Ceramic Bazaar App Download...</p>
+        </div>
+      }
+    >
+      <AppDownloadContent />
+    </Suspense>
   );
 }

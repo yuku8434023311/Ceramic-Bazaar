@@ -690,13 +690,13 @@ export function HomeClient({
               <div className="bg-white rounded-2xl p-5 text-center shadow-xl border-2 border-[#c59b27] max-w-[220px] w-full">
                 <div className="p-2 bg-slate-50 border border-slate-200 rounded-xl mb-2 flex items-center justify-center">
                   <img
-                    src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=https%3A%2F%2Fceramic-bazaar.vercel.app%2Fceramic-bazaar.apk"
-                    alt="Download App QR Code"
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https%3A%2F%2Fceramic-bazaar.vercel.app%2Fdownload%3Fauto%3D1"
+                    alt="Scan QR Code to Download Ceramic Bazaar APK"
                     className="w-32 h-32 object-contain"
                   />
                 </div>
                 <p className="text-[11px] font-black text-slate-900 leading-tight">Scan with Phone</p>
-                <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Instant APK Download</p>
+                <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Auto-Starts APK Download</p>
               </div>
             </div>
           </div>
