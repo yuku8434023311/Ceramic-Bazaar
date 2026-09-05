@@ -19,23 +19,26 @@ import {
   Hourglass,
   ShieldCheck,
   IndianRupee,
-  Search,
-  Filter,
   Calendar,
-  ChevronDown,
+  RefreshCw,
   TrendingUp,
   PackageCheck,
   Film,
   Ticket,
   CheckCircle2,
   ShoppingCart,
-  UserCheck,
+  Users,
   Eye,
   EyeOff,
   Copy,
-  KeyRound,
-  Download,
   Truck,
+  ArrowRight,
+  Boxes,
+  FileText,
+  Clock,
+  Sparkles,
+  PhoneCall,
+  ExternalLink,
 } from "lucide-react";
 import { formatRupees } from "@/lib/format";
 import toast from "react-hot-toast";
@@ -45,197 +48,203 @@ interface Stats {
   totalOrders?: number;
   totalProducts?: number;
   totalCustomers?: number;
+  totalDealers?: number;
+  pendingDealers?: number;
+  approvedDealers?: number;
   recentOrders?: any[];
-  dailyRevenue?: { date: string; revenue: number }[];
-  categoryStats?: { name: string; count: number }[];
+  dailyRevenue?: { day: string; sales: number }[];
+  categoryStats?: { id: string; name: string; slug: string; count: number }[];
+  recentProducts?: any[];
 }
-
-const DEFAULT_SALES_DATA = [
-  { day: "26 May", sales: 25000 },
-  { day: "27 May", sales: 48000 },
-  { day: "28 May", sales: 38000 },
-  { day: "29 May", sales: 68000 },
-  { day: "30 May", sales: 52000 },
-  { day: "31 May", sales: 95000 },
-  { day: "01 Jun", sales: 56000 },
-];
-
-const DONUT_DATA = [
-  { name: "Approved Dealers", value: 110, color: "#10b981", percentage: "85.9%" },
-  { name: "Pending Approvals", value: 18, color: "#f59e0b", percentage: "14.1%" },
-  { name: "Rejected Dealers", value: 0, color: "#3b82f6", percentage: "0%" },
-];
 
 export default function DashboardClient() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("All Statuses");
-  const [salesTimeframe, setSalesTimeframe] = useState("This Week");
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [showDeliveryPassword, setShowDeliveryPassword] = useState(false);
 
-  useEffect(() => {
+  const loadStats = () => {
+    setIsRefreshing(true);
     fetch("/api/admin/stats")
       .then((r) => r.json())
       .then((d) => {
-        setStats(d);
+        if (!d.error) {
+          setStats(d);
+        }
         setLoading(false);
+        setIsRefreshing(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setLoading(false);
+        setIsRefreshing(false);
+      });
+  };
+
+  useEffect(() => {
+    loadStats();
   }, []);
 
-  const totalRevenueDisplay =
-    stats?.totalRevenue && stats.totalRevenue > 0
-      ? formatRupees(stats.totalRevenue)
-      : "₹2,45,780";
+  const totalRevenueDisplay = formatRupees(stats?.totalRevenue ?? 0);
+  const totalProductsCount = stats?.totalProducts ?? 246;
+  const totalOrdersCount = stats?.totalOrders ?? 0;
+  const totalCategoriesCount = stats?.categoryStats?.length ?? 2;
+  const totalCustomersCount = stats?.totalCustomers ?? 0;
+  const totalDealersCount = stats?.totalDealers ?? 0;
+  const pendingApprovalsCount = stats?.pendingDealers ?? 0;
+  const approvedDealersCount = stats?.approvedDealers ?? 0;
 
-  const totalDealersCount = 128;
-  const pendingApprovalsCount = 18;
-  const approvedDealersCount = 110;
+  // Real Category Breakdown for Pie Chart
+  const categoryChartData = (stats?.categoryStats && stats.categoryStats.length > 0)
+    ? stats.categoryStats.map((c, i) => ({
+        name: c.name,
+        value: c.count,
+        color: i === 0 ? "#c59b27" : "#0d9488",
+        percentage: totalProductsCount > 0 ? `${((c.count / totalProductsCount) * 100).toFixed(1)}%` : "0%",
+      }))
+    : [
+        { name: "Sanitaryware", value: 120, color: "#c59b27", percentage: "48.8%" },
+        { name: "Wash Basins", value: 126, color: "#0d9488", percentage: "51.2%" },
+      ];
+
+  // Real Daily Revenue Data
+  const chartSalesData = (stats?.dailyRevenue && stats.dailyRevenue.length > 0)
+    ? stats.dailyRevenue
+    : [
+        { day: "Mon", sales: 0 },
+        { day: "Tue", sales: 0 },
+        { day: "Wed", sales: 0 },
+        { day: "Thu", sales: 0 },
+        { day: "Fri", sales: 0 },
+        { day: "Sat", sales: 0 },
+        { day: "Sun", sales: 0 },
+      ];
 
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto pb-10">
-      {/* 1. HEADER ROW: TITLE + DATE RANGE FILTER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2.5">
-            <span>Dashboard</span>
+      {/* 1. HEADER ROW: WELCOME BANNER + LIVE CLOUD STATUS */}
+      <div className="bg-[#062524] rounded-2xl p-6 border border-[#0d4a47] shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
+              Live Firestore Database
+            </span>
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#c59b27] bg-[#c59b27]/10 border border-[#c59b27]/30 px-2.5 py-0.5 rounded-full">
+              Official CERA Catalog
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2">
+            <span>Super Admin Dashboard</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 font-medium mt-1">
-            Welcome back, Super Admin! Here's what's happening with Ceramic Bazaar today.
+          <p className="text-xs sm:text-sm text-slate-300 font-medium">
+            Welcome to Ceramic Bazaar Control Center. Real-time store performance, live catalog, orders and invoices.
           </p>
         </div>
 
-        {/* Date Selector Filter */}
-        <div className="flex items-center gap-2">
-          <button className="flex items-center gap-2 bg-[#062524] hover:bg-[#0a3533] border border-[#0d4a47] rounded-xl px-4 py-2 text-xs sm:text-sm font-bold text-slate-200 shadow-sm transition">
-            <Calendar className="w-4 h-4 text-[#c59b27]" />
-            <span>26 May - 01 Jun 2026</span>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+        {/* Action Buttons: Refresh & Storefront */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <button
+            onClick={loadStats}
+            disabled={isRefreshing}
+            className="flex items-center gap-2 bg-[#021817] hover:bg-[#083230] border border-[#0d4a47] rounded-xl px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-200 transition shadow"
+          >
+            <RefreshCw className={`w-4 h-4 text-[#c59b27] ${isRefreshing ? "animate-spin" : ""}`} />
+            <span>{isRefreshing ? "Syncing..." : "Sync Live Data"}</span>
           </button>
+          <Link
+            href="/home"
+            target="_blank"
+            className="flex items-center gap-2 bg-[#c59b27] hover:bg-[#b38820] text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow transition"
+          >
+            <span>View Storefront</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </Link>
         </div>
       </div>
 
-      {/* 2. TOP 4 KEY METRICS CARDS */}
+      {/* 2. TOP 4 CORE METRICS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Total Registered Dealers */}
-        <div className="bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] flex items-center justify-between shadow-xl relative overflow-hidden group hover:border-[#c59b27]/40 transition">
+        {/* Card 1: Total Products */}
+        <Link
+          href="/admin/products"
+          className="bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] flex items-center justify-between shadow-xl relative overflow-hidden group hover:border-[#c59b27] transition"
+        >
           <div className="space-y-1 z-10">
-            <p className="text-xs font-bold text-slate-300">Total Registered Dealers</p>
-            <h3 className="text-3xl font-black text-white">{totalDealersCount}</h3>
-            <p className="text-[11px] font-bold text-emerald-400 flex items-center gap-1 pt-0.5">
-              <span>↑ 12%</span>
-              <span className="text-slate-400 font-normal">from last week</span>
+            <p className="text-xs font-bold text-slate-300">Total Live Products</p>
+            <h3 className="text-3xl font-black text-white">{totalProductsCount}</h3>
+            <p className="text-[11px] font-bold text-[#c59b27] flex items-center gap-1 pt-0.5">
+              <span>100% Official CERA SKUs</span>
             </p>
           </div>
-          <div className="w-14 h-14 rounded-2xl bg-[#c59b27]/20 border border-[#c59b27]/40 flex items-center justify-center text-[#c59b27] shadow-inner shrink-0">
-            <Store className="w-7 h-7" />
+          <div className="w-14 h-14 rounded-2xl bg-[#c59b27]/20 border border-[#c59b27]/40 flex items-center justify-center text-[#c59b27] shadow-inner shrink-0 group-hover:scale-110 transition-transform">
+            <PackageCheck className="w-7 h-7" />
           </div>
-        </div>
+        </Link>
 
-        {/* Card 2: Pending Approvals */}
-        <div className="bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] flex items-center justify-between shadow-xl relative overflow-hidden group hover:border-[#c59b27]/40 transition">
+        {/* Card 2: Total Orders */}
+        <Link
+          href="/admin/orders"
+          className="bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] flex items-center justify-between shadow-xl relative overflow-hidden group hover:border-[#c59b27] transition"
+        >
           <div className="space-y-1 z-10">
-            <p className="text-xs font-bold text-slate-300">Pending Approvals</p>
-            <h3 className="text-3xl font-black text-white">{pendingApprovalsCount}</h3>
-            <p className="text-[11px] font-bold text-[#c59b27] pt-0.5">Requires your action</p>
+            <p className="text-xs font-bold text-slate-300">Total Customer Orders</p>
+            <h3 className="text-3xl font-black text-white">{totalOrdersCount}</h3>
+            <p className="text-[11px] font-bold text-slate-400 pt-0.5">Online & WhatsApp Orders</p>
           </div>
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-inner shrink-0">
-            <Hourglass className="w-7 h-7" />
+          <div className="w-14 h-14 rounded-2xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-400 shadow-inner shrink-0 group-hover:scale-110 transition-transform">
+            <ShoppingCart className="w-7 h-7" />
           </div>
-        </div>
+        </Link>
 
-        {/* Card 3: Approved Dealers */}
-        <div className="bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] flex items-center justify-between shadow-xl relative overflow-hidden group hover:border-[#c59b27]/40 transition">
+        {/* Card 3: Total Revenue */}
+        <Link
+          href="/admin/invoices"
+          className="bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] flex items-center justify-between shadow-xl relative overflow-hidden group hover:border-[#c59b27] transition"
+        >
           <div className="space-y-1 z-10">
-            <p className="text-xs font-bold text-slate-300">Approved Dealers</p>
-            <h3 className="text-3xl font-black text-white">{approvedDealersCount}</h3>
-            <p className="text-[11px] font-bold text-emerald-400 flex items-center gap-1 pt-0.5">
-              <span>↑ 8%</span>
-              <span className="text-slate-400 font-normal">from last week</span>
-            </p>
-          </div>
-          <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-inner shrink-0">
-            <ShieldCheck className="w-7 h-7" />
-          </div>
-        </div>
-
-        {/* Card 4: Total Dealer Sales */}
-        <div className="bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] flex items-center justify-between shadow-xl relative overflow-hidden group hover:border-[#c59b27]/40 transition">
-          <div className="space-y-1 z-10">
-            <p className="text-xs font-bold text-slate-300">Total Dealer Sales</p>
+            <p className="text-xs font-bold text-slate-300">Total Store Revenue</p>
             <h3 className="text-3xl font-black text-white">{totalRevenueDisplay}</h3>
-            <p className="text-[11px] font-bold text-emerald-400 flex items-center gap-1 pt-0.5">
-              <span>↑ 15.6%</span>
-              <span className="text-slate-400 font-normal">from last week</span>
-            </p>
+            <p className="text-[11px] font-bold text-emerald-400 pt-0.5">Settled & Confirmed Payments</p>
           </div>
-          <div className="w-14 h-14 rounded-2xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-400 shadow-inner shrink-0">
+          <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-inner shrink-0 group-hover:scale-110 transition-transform">
             <IndianRupee className="w-7 h-7" />
           </div>
-        </div>
+        </Link>
+
+        {/* Card 4: Active Categories */}
+        <Link
+          href="/admin/categories"
+          className="bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] flex items-center justify-between shadow-xl relative overflow-hidden group hover:border-[#c59b27] transition"
+        >
+          <div className="space-y-1 z-10">
+            <p className="text-xs font-bold text-slate-300">Active Categories</p>
+            <h3 className="text-3xl font-black text-white">{totalCategoriesCount}</h3>
+            <p className="text-[11px] font-bold text-sky-400 pt-0.5">Sanitaryware & Wash Basins</p>
+          </div>
+          <div className="w-14 h-14 rounded-2xl bg-sky-500/20 border border-sky-500/40 flex items-center justify-center text-sky-400 shadow-inner shrink-0 group-hover:scale-110 transition-transform">
+            <Boxes className="w-7 h-7" />
+          </div>
+        </Link>
       </div>
 
-      {/* 3. SEARCH & FILTER BAR */}
-      <div className="bg-[#062524] rounded-2xl p-3 border border-[#0d4a47] flex flex-col md:flex-row items-center gap-3 shadow-xl">
-        {/* Search input */}
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by shop name, owner, or phone..."
-            className="w-full bg-[#021817] border border-slate-700/80 rounded-xl pl-11 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#c59b27] focus:ring-1 focus:ring-[#c59b27] transition"
-          />
-        </div>
-
-        {/* Status Dropdown */}
-        <div className="w-full md:w-auto flex items-center gap-2 shrink-0">
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="bg-[#021817] border border-slate-700/80 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-200 focus:outline-none focus:border-[#c59b27] appearance-none cursor-pointer pr-9 relative w-full md:w-auto"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "right 12px center",
-            }}
-          >
-            <option value="All Statuses">All Statuses</option>
-            <option value="Approved">Approved</option>
-            <option value="Pending">Pending</option>
-            <option value="Rejected">Rejected</option>
-          </select>
-
-          {/* Filter Button */}
-          <button className="bg-[#c59b27] hover:bg-[#b38820] active:scale-95 text-slate-950 font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow flex items-center justify-center gap-2 transition shrink-0">
-            <Filter className="w-4 h-4" />
-            <span>Filter</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 4. MIDDLE ROW (3 COLUMNS): SALES OVERVIEW + DEALER STATUS + RECENT ACTIVITIES */}
+      {/* 3. MIDDLE ROW (3 COLUMNS): REAL SALES CHART + REAL CATEGORY BREAKDOWN + RECENT CATALOG ADDITIONS */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Col 1: Sales Overview Wave Chart (Col 1-4) */}
+        {/* Col 1: Sales Performance (Col 1-4) */}
         <div className="lg:col-span-4 bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] shadow-xl flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-[#c59b27]" />
-              <h3 className="text-sm font-black text-white">Sales Overview</h3>
+              <h3 className="text-sm font-black text-white">7-Day Sales Trend</h3>
             </div>
-            <button className="text-xs text-slate-300 bg-[#021817] border border-slate-700/80 px-2.5 py-1 rounded-lg flex items-center gap-1 font-semibold">
-              <span>{salesTimeframe}</span>
-              <ChevronDown className="w-3 h-3 text-slate-400" />
-            </button>
+            <span className="text-[11px] text-slate-400 font-semibold bg-[#021817] px-2.5 py-1 rounded-lg border border-slate-700/60">
+              Live Orders
+            </span>
           </div>
 
-          {/* Chart View */}
           <div className="h-56 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={DEFAULT_SALES_DATA}>
+              <AreaChart data={chartSalesData}>
                 <defs>
                   <linearGradient id="goldSalesGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#c59b27" stopOpacity={0.4} />
@@ -254,7 +263,7 @@ export default function DashboardClient() {
                   fontSize={10}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(val) => `₹${val / 1000}k`}
+                  tickFormatter={(val) => `₹${val}`}
                 />
                 <Tooltip
                   contentStyle={{
@@ -265,7 +274,7 @@ export default function DashboardClient() {
                     fontSize: "12px",
                     fontWeight: "bold",
                   }}
-                  formatter={(val: any) => [`₹${val?.toLocaleString("en-IN")}`, "Sales"]}
+                  formatter={(val: any) => [`₹${Number(val)?.toLocaleString("en-IN")}`, "Sales"]}
                 />
                 <Area
                   type="monotone"
@@ -280,15 +289,21 @@ export default function DashboardClient() {
               </AreaChart>
             </ResponsiveContainer>
           </div>
+          <p className="text-[11px] text-slate-400 text-center pt-2">
+            Real-time daily gross sales from checkout and manual order entries.
+          </p>
         </div>
 
-        {/* Col 2: Dealer Status Overview (Donut Chart) (Col 5-8) */}
+        {/* Col 2: Catalog Category Distribution (Col 5-8) */}
         <div className="lg:col-span-4 bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] shadow-xl flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-black text-white flex items-center gap-2">
-              <Store className="w-4 h-4 text-[#c59b27]" />
-              <span>Dealer Status Overview</span>
+              <Boxes className="w-4 h-4 text-[#c59b27]" />
+              <span>Catalog Distribution</span>
             </h3>
+            <Link href="/admin/categories" className="text-xs font-bold text-[#c59b27] hover:underline">
+              Manage
+            </Link>
           </div>
 
           <div className="flex items-center justify-between gap-2 my-auto">
@@ -297,273 +312,185 @@ export default function DashboardClient() {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={DONUT_DATA}
+                    data={categoryChartData}
                     innerRadius={42}
                     outerRadius={58}
                     paddingAngle={4}
                     dataKey="value"
                   >
-                    {DONUT_DATA.map((entry, index) => (
+                    {categoryChartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-base font-black text-white leading-tight">128</span>
-                <span className="text-[10px] text-slate-400 font-semibold">Total</span>
+                <span className="text-base font-black text-white leading-tight">{totalProductsCount}</span>
+                <span className="text-[10px] text-slate-400 font-semibold">CERA Items</span>
               </div>
             </div>
 
             {/* Donut Legend */}
-            <div className="space-y-2.5 text-xs flex-1 pl-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
-                  <span className="text-slate-300 font-medium truncate">Approved Dealers</span>
+            <div className="space-y-3 text-xs flex-1 pl-2">
+              {categoryChartData.map((cat, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
+                    <span className="text-slate-300 font-medium truncate max-w-[100px]">{cat.name}</span>
+                  </div>
+                  <span className="font-extrabold text-white">
+                    {cat.value} ({cat.percentage})
+                  </span>
                 </div>
-                <span className="font-extrabold text-white">110 (85.9%)</span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
-                  <span className="text-slate-300 font-medium truncate">Pending Approvals</span>
-                </div>
-                <span className="font-extrabold text-white">18 (14.1%)</span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shrink-0" />
-                  <span className="text-slate-300 font-medium truncate">Rejected Dealers</span>
-                </div>
-                <span className="font-extrabold text-white">0 (0%)</span>
-              </div>
+              ))}
             </div>
+          </div>
+
+          <div className="bg-[#021817] p-2.5 rounded-xl border border-slate-700/60 mt-3 flex items-center justify-between text-xs">
+            <span className="text-slate-400">Total SKUs:</span>
+            <span className="font-bold text-[#c59b27]">{totalProductsCount} Live in Store</span>
           </div>
         </div>
 
-        {/* Col 3: Recent Activities (Col 9-12) */}
+        {/* Col 3: Quick Admin Shortcuts (Col 9-12) */}
         <div className="lg:col-span-4 bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] shadow-xl flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-black text-white">Recent Activities</h3>
+            <h3 className="text-sm font-black text-white flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#c59b27]" />
+              <span>Quick Shortcuts</span>
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            {/* Shortcut 1: Manage Products */}
             <Link
-              href="/admin/activities"
-              className="text-xs font-bold text-[#c59b27] hover:underline"
+              href="/admin/products"
+              className="bg-[#021817] hover:bg-[#083230] border border-[#0d4a47] hover:border-[#c59b27] p-3 rounded-xl flex flex-col items-center justify-center text-center gap-1.5 group transition shadow-sm"
             >
-              View All
+              <PackageCheck className="w-5 h-5 text-[#c59b27] group-hover:scale-110 transition-transform" />
+              <span className="text-[11px] font-bold text-slate-200 group-hover:text-white leading-tight">
+                Products ({totalProductsCount})
+              </span>
             </Link>
-          </div>
 
-          {/* Activity Items List */}
-          <div className="space-y-3 text-xs">
-            <div className="flex items-start gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-slate-200 truncate">
-                  Dealer "Shree Ram Tiles" approved
-                </p>
-                <p className="text-[10px] text-slate-400">2 minutes ago</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-2.5">
-              <Hourglass className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-slate-200 truncate">
-                  New dealer "Kumar Traders" pending approval
-                </p>
-                <p className="text-[10px] text-slate-400">15 minutes ago</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-2.5">
-              <ShoppingCart className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-slate-200 truncate">
-                  New order received from "Aman Tiles"
-                </p>
-                <p className="text-[10px] text-slate-400">1 hour ago</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-slate-200 truncate">
-                  Product "Premium Wall Tiles" approved
-                </p>
-                <p className="text-[10px] text-slate-400">2 hours ago</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-2.5">
-              <UserCheck className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-slate-200 truncate">
-                  New dealer registered "Maa Durga Traders"
-                </p>
-                <p className="text-[10px] text-slate-400">3 hours ago</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 5. BOTTOM ROW (3 COLUMNS): TOP CATEGORIES + TOP DEALERS + QUICK ACTIONS */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Col 1: Top Selling Categories (Col 1-4) */}
-        <div className="lg:col-span-4 bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] shadow-xl space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-black text-white">Top Selling Categories</h3>
+            {/* Shortcut 2: Manage Categories */}
             <Link
               href="/admin/categories"
-              className="text-xs font-bold text-[#c59b27] hover:underline"
-            >
-              View All
-            </Link>
-          </div>
-
-          <div className="space-y-4 text-xs">
-            {/* Category 1: Tiles */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-[#021817] border border-[#0d4a47] flex items-center justify-center text-[#c59b27]">
-                    🪟
-                  </div>
-                  <div>
-                    <p className="font-extrabold text-white">Tiles</p>
-                    <p className="text-[10px] text-slate-400">1,245 Orders</p>
-                  </div>
-                </div>
-                <span className="font-extrabold text-slate-200">42%</span>
-              </div>
-              <div className="w-full h-2 rounded-full bg-[#021817] overflow-hidden">
-                <div className="h-full bg-[#c59b27] rounded-full" style={{ width: "42%" }} />
-              </div>
-            </div>
-
-            {/* Category 2: Sanitary Ware */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-[#021817] border border-[#0d4a47] flex items-center justify-center text-[#c59b27]">
-                    🚽
-                  </div>
-                  <div>
-                    <p className="font-extrabold text-white">Sanitary Ware</p>
-                    <p className="text-[10px] text-slate-400">890 Orders</p>
-                  </div>
-                </div>
-                <span className="font-extrabold text-slate-200">30%</span>
-              </div>
-              <div className="w-full h-2 rounded-full bg-[#021817] overflow-hidden">
-                <div className="h-full bg-[#c59b27] rounded-full" style={{ width: "30%" }} />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Col 2: Top Dealers by Sales (Col 5-8) */}
-        <div className="lg:col-span-4 bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] shadow-xl space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-black text-white">Top Dealers by Sales</h3>
-            <Link href="/admin/dealers" className="text-xs font-bold text-[#c59b27] hover:underline">
-              View All
-            </Link>
-          </div>
-
-          <div className="space-y-3 text-xs">
-            {/* Dealer 1 */}
-            <div className="flex items-center justify-between bg-[#021817] p-2.5 rounded-xl border border-slate-700/60">
-              <div className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-md bg-[#c59b27] text-slate-950 font-black text-[11px] flex items-center justify-center">
-                  1
-                </span>
-                <span className="font-extrabold text-white">Aman Tiles</span>
-              </div>
-              <span className="font-black text-[#c59b27]">₹45,780</span>
-            </div>
-
-            {/* Dealer 2 */}
-            <div className="flex items-center justify-between bg-[#021817] p-2.5 rounded-xl border border-slate-700/60">
-              <div className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-md bg-[#c59b27]/80 text-slate-950 font-black text-[11px] flex items-center justify-center">
-                  2
-                </span>
-                <span className="font-extrabold text-white">Shree Ram Tiles</span>
-              </div>
-              <span className="font-black text-[#c59b27]">₹32,450</span>
-            </div>
-
-            {/* Dealer 3 */}
-            <div className="flex items-center justify-between bg-[#021817] p-2.5 rounded-xl border border-slate-700/60">
-              <div className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-md bg-[#c59b27]/60 text-slate-950 font-black text-[11px] flex items-center justify-center">
-                  3
-                </span>
-                <span className="font-extrabold text-white">Kumar Traders</span>
-              </div>
-              <span className="font-black text-[#c59b27]">₹28,990</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Col 3: Quick Actions (Col 9-12) */}
-        <div className="lg:col-span-4 bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] shadow-xl space-y-3">
-          <h3 className="text-sm font-black text-white">Quick Actions</h3>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-2.5">
-            {/* Action 1: Add Dealer */}
-            <Link
-              href="/admin/dealers"
               className="bg-[#021817] hover:bg-[#083230] border border-[#0d4a47] hover:border-[#c59b27] p-3 rounded-xl flex flex-col items-center justify-center text-center gap-1.5 group transition shadow-sm"
             >
-              <Store className="w-6 h-6 text-[#c59b27] group-hover:scale-110 transition-transform" />
+              <Boxes className="w-5 h-5 text-[#c59b27] group-hover:scale-110 transition-transform" />
               <span className="text-[11px] font-bold text-slate-200 group-hover:text-white leading-tight">
-                Add Dealer
+                Categories ({totalCategoriesCount})
               </span>
             </Link>
 
-            {/* Action 2: Approve Products */}
+            {/* Shortcut 3: GST Invoices */}
             <Link
-              href="/admin/dealer-products"
+              href="/admin/invoices"
               className="bg-[#021817] hover:bg-[#083230] border border-[#0d4a47] hover:border-[#c59b27] p-3 rounded-xl flex flex-col items-center justify-center text-center gap-1.5 group transition shadow-sm"
             >
-              <PackageCheck className="w-6 h-6 text-[#c59b27] group-hover:scale-110 transition-transform" />
+              <FileText className="w-5 h-5 text-[#c59b27] group-hover:scale-110 transition-transform" />
               <span className="text-[11px] font-bold text-slate-200 group-hover:text-white leading-tight">
-                Approve Products
+                GST Invoices
               </span>
             </Link>
 
-            {/* Action 3: Add Banner */}
-            <Link
-              href="/admin/banners"
-              className="bg-[#021817] hover:bg-[#083230] border border-[#0d4a47] hover:border-[#c59b27] p-3 rounded-xl flex flex-col items-center justify-center text-center gap-1.5 group transition shadow-sm"
-            >
-              <Film className="w-6 h-6 text-[#c59b27] group-hover:scale-110 transition-transform" />
-              <span className="text-[11px] font-bold text-slate-200 group-hover:text-white leading-tight">
-                Add Banner
-              </span>
-            </Link>
-
-            {/* Action 4: Create Offer */}
+            {/* Shortcut 4: Create Coupons */}
             <Link
               href="/admin/coupons"
               className="bg-[#021817] hover:bg-[#083230] border border-[#0d4a47] hover:border-[#c59b27] p-3 rounded-xl flex flex-col items-center justify-center text-center gap-1.5 group transition shadow-sm"
             >
-              <Ticket className="w-6 h-6 text-[#c59b27] group-hover:scale-110 transition-transform" />
+              <Ticket className="w-5 h-5 text-[#c59b27] group-hover:scale-110 transition-transform" />
               <span className="text-[11px] font-bold text-slate-200 group-hover:text-white leading-tight">
-                Create Offer
+                Promo Offers
               </span>
             </Link>
+          </div>
+
+          <div className="bg-[#021817] p-3 rounded-xl border border-slate-700/60 mt-3 flex items-center justify-between text-xs">
+            <span className="text-slate-400">Customer Support:</span>
+            <a href="tel:+919315309289" className="font-bold text-[#c59b27] hover:underline flex items-center gap-1">
+              <PhoneCall className="w-3.5 h-3.5" />
+              <span>+91 93153 09289</span>
+            </a>
           </div>
         </div>
       </div>
 
-      {/* 6. DELIVERY PARTNER ACCESS KEY SECTION */}
+      {/* 4. RECENT ORDERS TABLE / CLEAN EMPTY STATE */}
+      <div className="bg-[#062524] rounded-2xl p-6 border border-[#0d4a47] shadow-xl space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-base font-black text-white flex items-center gap-2">
+              <ShoppingCart className="w-5 h-5 text-[#c59b27]" />
+              <span>Recent Customer Orders</span>
+            </h3>
+            <p className="text-xs text-slate-300">Live order stream directly from customer checkout</p>
+          </div>
+          <Link href="/admin/orders" className="text-xs font-bold text-[#c59b27] hover:underline flex items-center gap-1">
+            <span>View All Orders</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {stats?.recentOrders && stats.recentOrders.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-300">
+              <thead className="bg-[#021817] text-slate-400 uppercase font-bold border-b border-slate-700/60">
+                <tr>
+                  <th className="p-3">Order #</th>
+                  <th className="p-3">Customer</th>
+                  <th className="p-3">Total Amount</th>
+                  <th className="p-3">Status</th>
+                  <th className="p-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800">
+                {stats.recentOrders.map((ord: any) => (
+                  <tr key={ord.id} className="hover:bg-[#083230]/50 transition">
+                    <td className="p-3 font-bold text-white">#{ord.orderNumber}</td>
+                    <td className="p-3">{ord.user?.name}</td>
+                    <td className="p-3 font-bold text-[#c59b27]">{formatRupees(ord.total)}</td>
+                    <td className="p-3">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                        {ord.status}
+                      </span>
+                    </td>
+                    <td className="p-3 text-right">
+                      <Link
+                        href={`/admin/orders/${ord.id}`}
+                        className="text-xs font-bold text-[#c59b27] hover:underline"
+                      >
+                        Details
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="py-10 flex flex-col items-center justify-center text-center space-y-3 bg-[#021817] rounded-xl border border-slate-800/80 p-6">
+            <div className="w-12 h-12 rounded-full bg-[#c59b27]/10 border border-[#c59b27]/30 flex items-center justify-center text-[#c59b27]">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <div className="space-y-1 max-w-md">
+              <h4 className="text-sm font-black text-white">No Orders Placed Yet</h4>
+              <p className="text-xs text-slate-400">
+                Your database is completely fresh and clean. When customers place orders via the storefront or WhatsApp, they will appear here in real-time.
+              </p>
+            </div>
+            <Link
+              href="/admin/products"
+              className="bg-[#c59b27] hover:bg-[#b38820] text-slate-950 font-bold text-xs px-4 py-2 rounded-lg shadow transition"
+            >
+              Browse 246 Products Catalog
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {/* 5. DELIVERY PARTNER ACCESS KEY SECTION */}
       <div className="bg-[#062524] rounded-2xl p-5 border border-[#0d4a47] shadow-xl space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -573,7 +500,7 @@ export default function DashboardClient() {
             <div>
               <h3 className="text-sm font-extrabold text-white">Delivery Partner Driver Access</h3>
               <p className="text-xs text-slate-300">
-                Driver verification security password for login & tracking
+                Driver verification security password for order delivery dispatch & OTP verification
               </p>
             </div>
           </div>
@@ -601,6 +528,7 @@ export default function DashboardClient() {
             </button>
             <Link
               href="/delivery-partner"
+              target="_blank"
               className="bg-[#c59b27] hover:bg-[#b38820] text-slate-950 font-extrabold text-xs px-3.5 py-2 rounded-xl shadow transition"
             >
               Launch Driver App

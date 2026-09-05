@@ -60,7 +60,7 @@ export async function GET(req: Request) {
         type: isDealerProduct ? "DEALER" : "ADMIN",
         category: "Product Upload",
         title: `${isDealerProduct ? "Dealer Product Uploaded" : "Super Admin Product Added"}: ${p.name}`,
-        description: `Product "${p.name}" listed under price ₹${p.price}. Status: ${p.status || "LIVE"}. Shop: ${p.shopName || "Electro Bazaar Official Store"}.`,
+        description: `Product "${p.name}" listed under price ₹${p.price}. Status: ${p.status || "LIVE"}. Shop: ${p.shopName || "Ceramic Bazaar Official Store"}.`,
         timestamp: p.createdAt || new Date(),
         user: { name: p.shopName || "Admin", shopName: p.shopName },
         badgeColor: isDealerProduct ? "amber" : "purple",
