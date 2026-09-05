@@ -175,42 +175,44 @@ function AppDownloadContent() {
 
               {/* Download Buttons */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
-                <Button
+                <button
+                  type="button"
                   onClick={triggerDownloadAction}
                   disabled={downloading}
-                  className="h-14 px-8 rounded-2xl bg-[#c59b27] hover:bg-[#b38820] text-slate-950 font-black text-base shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3 border-none cursor-pointer"
+                  className="h-14 px-8 rounded-2xl bg-[#c59b27] hover:bg-[#b38820] text-slate-950 font-black text-base shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-75"
                 >
                   <Download className="w-6 h-6 shrink-0" />
                   <span>{downloading ? "Starting Download..." : "Download APK (.apk)"}</span>
-                </Button>
+                </button>
 
-                <Button
+                <button
+                  type="button"
                   onClick={handleShare}
-                  variant="outline"
-                  className="h-14 px-6 rounded-2xl border-2 border-white/40 hover:border-white hover:bg-white/10 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all backdrop-blur-sm cursor-pointer"
+                  className="h-14 px-7 rounded-2xl bg-[#031716] hover:bg-[#083533] border-2 border-[#c59b27]/60 hover:border-[#c59b27] text-white hover:text-[#c59b27] font-black text-sm flex items-center justify-center gap-2.5 transition-all shadow-xl active:scale-95 cursor-pointer"
                 >
                   <Share2 className="w-5 h-5 text-[#c59b27]" />
-                  <span>Share Link</span>
-                </Button>
+                  <span>Share App Link</span>
+                </button>
               </div>
 
               {/* Direct Link Row with Copy Button */}
-              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400 pt-1">
-                <span>Direct File:</span>
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-300 pt-1 font-medium">
+                <span className="text-slate-400 font-semibold">Direct File URL:</span>
                 <a
                   href={apkDownloadUrl}
                   download="ceramic-bazaar.apk"
-                  className="text-[#c59b27] hover:text-white font-mono underline font-bold"
+                  className="text-[#c59b27] hover:text-white font-mono underline font-bold transition"
                 >
                   https://ceramic-bazaar.vercel.app/ceramic-bazaar.apk
                 </a>
                 <button
+                  type="button"
                   onClick={handleCopyLink}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold bg-[#031716] hover:bg-[#083533] text-slate-300 px-2 py-0.5 rounded border border-[#0d4a47] transition ml-1"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold bg-[#031716] hover:bg-[#083533] text-slate-200 hover:text-white px-2.5 py-1 rounded-lg border border-[#0d4a47] hover:border-[#c59b27]/60 transition shadow-sm active:scale-95 cursor-pointer"
                   title="Copy Direct Link"
                 >
-                  {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                  <span>{copied ? "Copied" : "Copy"}</span>
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-[#c59b27]" />}
+                  <span>{copied ? "Copied!" : "Copy"}</span>
                 </button>
               </div>
             </div>
