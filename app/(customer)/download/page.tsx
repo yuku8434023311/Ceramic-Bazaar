@@ -34,7 +34,7 @@ function AppDownloadContent() {
   const [autoTriggered, setAutoTriggered] = useState(false);
   const apkDownloadUrl = "/ceramic-bazaar.apk";
   const apkApiUrl = "/api/download-apk";
-  const apkSize = "9.7 MB";
+  const apkSize = "7.1 MB";
 
   const triggerDownloadAction = () => {
     setDownloading(true);
@@ -298,6 +298,19 @@ function AppDownloadContent() {
             </h3>
             <p className="text-sm text-slate-600 leading-relaxed font-medium">
               Tap the downloaded file from notifications or Downloads folder and tap <strong className="text-slate-800">"Install"</strong>. If prompted, toggle <em className="text-slate-800 font-semibold">"Allow from this source"</em>.
+            </p>
+          </div>
+        </div>
+
+        {/* Package Conflict / Update Notice Card */}
+        <div className="mt-6 bg-amber-50 border-2 border-amber-300/80 rounded-2xl p-4 sm:p-5 flex items-start gap-3 text-amber-950">
+          <HelpCircle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+          <div className="text-xs sm:text-sm">
+            <p className="font-black text-amber-900 mb-0.5">
+              Getting "App not installed as package conflicts with an existing package"?
+            </p>
+            <p className="font-medium text-amber-800 leading-relaxed">
+              If an older build of Ceramic Bazaar or Electro Bazaar is already installed on your device, please <strong>uninstall / delete the old app first</strong> from your phone, then tap the downloaded APK to install cleanly.
             </p>
           </div>
         </div>

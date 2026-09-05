@@ -272,7 +272,7 @@ export default function ProfilePage() {
               className="bg-[#c59b27] hover:bg-[#b38820] text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow w-full sm:w-auto"
             >
               <Download className="w-4 h-4" />
-              <span>Download APK (9.7 MB)</span>
+              <span>Download APK (7.1 MB)</span>
             </a>
             <Link
               href="/download"

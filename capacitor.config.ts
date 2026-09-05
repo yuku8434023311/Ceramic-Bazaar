@@ -5,8 +5,8 @@ const config: CapacitorConfig = {
   appName: 'Ceramic Bazaar',
   webDir: 'out',
   server: {
-    url: 'http://10.171.121.88:3599',
-    allowNavigation: ['10.171.121.88:3599', '10.30.51.192:3599', 'localhost:3599', 'ceramicbazaar.com', '*.ceramicbazaar.com', '*.loca.lt'],
+    url: 'https://ceramic-bazaar.vercel.app',
+    allowNavigation: ['ceramic-bazaar.vercel.app', 'ceramicbazaar.com', '*.ceramicbazaar.com', '*.vercel.app'],
     cleartext: true
   }
 };

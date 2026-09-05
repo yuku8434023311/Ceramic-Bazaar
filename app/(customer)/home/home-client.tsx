@@ -657,7 +657,7 @@ export function HomeClient({
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> 100% Virus-Free APK
                 </span>
                 <span className="bg-[#031716] px-3 py-1 rounded-lg border border-[#0d4a47] text-white">
-                  File Size: <strong className="text-[#c59b27]">9.7 MB</strong>
+                  File Size: <strong className="text-[#c59b27]">7.1 MB</strong>
                 </span>
                 <span className="bg-[#031716] px-3 py-1 rounded-lg border border-[#0d4a47] text-white">
                   Android 7.0 & Higher
@@ -672,7 +672,7 @@ export function HomeClient({
                   className="bg-[#c59b27] hover:bg-[#b38820] active:scale-95 text-slate-950 font-black text-xs sm:text-sm px-6 py-3 rounded-xl shadow-xl flex items-center gap-2.5 transition-all"
                 >
                   <Download className="w-4 h-4" />
-                  <span>Download APK Now (9.7 MB)</span>
+                  <span>Download APK Now (7.1 MB)</span>
                 </a>
 
                 <Link
