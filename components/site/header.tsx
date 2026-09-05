@@ -329,7 +329,7 @@ export function Header() {
                 cartBouncing ? "scale-110" : ""
               }`}
             >
-              <div className="relative">
+              <div className="relative" id="header-cart-icon-inner">
                 <ShoppingCart className="w-5 h-5 text-slate-700 group-hover:text-[#062524] transition" strokeWidth={1.6} />
                 {cartCount > 0 && (
                   <span className="absolute -top-1.5 -right-2 h-4 min-w-[16px] px-1 rounded-full bg-[#c59b27] text-slate-950 text-[10px] font-black flex items-center justify-center shadow-sm">
