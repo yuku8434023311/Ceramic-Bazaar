@@ -53,13 +53,18 @@ export function ProductCard({
     const variantName = defaultVar ? `${defaultVar.ram || ""} ${defaultVar.storage || ""}`.trim() : null;
 
     if (status !== "authenticated") {
-      addToGuestCart(product.id, 1, {
+      addToGuestCart(product, 1, {
         variantId,
         variantName,
         sku: defaultVar?.sku,
         price: displayPrice,
       });
-      toast.success("Added to cart");
+      toast.success(`${product.name} added to cart!`, {
+        action: {
+          label: "View Cart",
+          onClick: () => router.push("/cart"),
+        },
+      });
       onAdd?.(product.id);
       return;
     }

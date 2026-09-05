@@ -12,49 +12,60 @@ export interface FlyingItem {
   imgUrl?: string;
 }
 
-export function triggerFlyToCart(e: React.MouseEvent | HTMLElement, imgUrl?: string) {
+export function triggerFlyToCart(e?: React.MouseEvent | HTMLElement, imgUrl?: string) {
   if (typeof window === "undefined") return;
+
+  // 1. Automatically smooth scroll to top so the cart icon and entire animation is clearly visible
+  if (window.scrollY > 50) {
+    try {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (_) {
+      window.scrollTo(0, 0);
+    }
+  }
 
   let startX = window.innerWidth / 2;
   let startY = window.innerHeight / 2;
 
-  if ("clientX" in e && "clientY" in e) {
-    startX = e.clientX;
-    startY = e.clientY;
-  } else if (e instanceof HTMLElement) {
-    const rect = e.getBoundingClientRect();
-    startX = rect.left + rect.width / 2;
-    startY = rect.top + rect.height / 2;
-  }
-
-  // Find Cart Icon target position (Top header cart or bottom nav cart)
-  let cartIconEl = document.querySelector("#header-cart-icon") || document.querySelector("[data-cart-icon]");
-  
-  // On mobile screens, check if bottom cart tab is present and visible
-  const bottomCartEl = document.querySelector("#bottom-cart-tab");
-  if (window.innerWidth < 768 && bottomCartEl) {
-    const bRect = bottomCartEl.getBoundingClientRect();
-    if (bRect.top > 0) {
-      cartIconEl = bottomCartEl;
+  if (e) {
+    if ("clientX" in e && "clientY" in e) {
+      startX = e.clientX;
+      startY = e.clientY;
+    } else if (e instanceof HTMLElement) {
+      const rect = e.getBoundingClientRect();
+      startX = rect.left + rect.width / 2;
+      startY = rect.top + rect.height / 2;
     }
   }
 
-  let endX = window.innerWidth - 50;
-  let endY = 35;
+  // Find Cart Icon target position (Top header cart icon)
+  let cartIconEl =
+    document.querySelector("#header-cart-icon") ||
+    document.querySelector("[data-cart-icon='true']") ||
+    document.querySelector("[data-cart-icon]");
+
+  let endX = window.innerWidth - 65;
+  let endY = 40;
 
   if (cartIconEl) {
     const rect = cartIconEl.getBoundingClientRect();
-    endX = rect.left + rect.width / 2;
-    endY = rect.top + rect.height / 2;
+    if (rect.width > 0 && rect.height > 0) {
+      endX = rect.left + rect.width / 2;
+      endY = rect.top + rect.height / 2;
+    }
   }
 
+  // Ensure reasonable bounds
+  if (endY < 10) endY = 35;
+  if (endX < 50) endX = window.innerWidth - 60;
+
   const detail: FlyingItem = {
-    id: "fly_" + Math.random().toString(36).substring(2, 9),
-    startX,
-    startY,
+    id: "fly_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now().toString(36),
+    startX: Math.max(20, Math.min(window.innerWidth - 60, startX)),
+    startY: Math.max(50, Math.min(window.innerHeight - 50, startY)),
     endX,
     endY,
-    imgUrl,
+    imgUrl: imgUrl || "https://www.cera-india.com/sites/default/files/cera/product_images/S1013272.jpg",
   };
 
   window.dispatchEvent(new CustomEvent("fly-to-cart", { detail }));
@@ -62,6 +73,7 @@ export function triggerFlyToCart(e: React.MouseEvent | HTMLElement, imgUrl?: str
 
 export function FlyToCartContainer() {
   const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
+  const [pulseTarget, setPulseTarget] = useState<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const handleFly = (event: Event) => {
@@ -71,12 +83,13 @@ export function FlyToCartContainer() {
       const newItem = customEvent.detail;
       setFlyingItems((prev) => [...prev, newItem]);
 
-      // Remove after animation completes (900ms smooth luxury arc)
+      // When item arrives at cart target (after 900ms)
       setTimeout(() => {
         setFlyingItems((prev) => prev.filter((item) => item.id !== newItem.id));
-        // Trigger cart icon bounce when thumbnail arrives
+        setPulseTarget({ x: newItem.endX, y: newItem.endY });
         window.dispatchEvent(new Event("cart-bounce"));
-      }, 950);
+        setTimeout(() => setPulseTarget(null), 800);
+      }, 920);
     };
 
     window.addEventListener("fly-to-cart", handleFly);
@@ -84,50 +97,80 @@ export function FlyToCartContainer() {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[9999999] overflow-hidden">
+    <div className="pointer-events-none fixed inset-0 z-[99999999] overflow-hidden">
       <AnimatePresence>
         {flyingItems.map((item) => (
           <motion.div
             key={item.id}
             initial={{
-              x: item.startX - 30,
-              y: item.startY - 30,
-              scale: 1.1,
-              rotate: 0,
-              opacity: 1,
+              x: item.startX - 36,
+              y: item.startY - 36,
+              scale: 0.7,
+              rotate: -8,
+              opacity: 0,
             }}
             animate={{
-              x: [item.startX - 30, (item.startX + item.endX) / 2 - 20, item.endX - 15],
-              y: [
-                item.startY - 30,
-                Math.min(item.startY, item.endY) - 50,
-                item.endY - 15,
+              x: [
+                item.startX - 36,
+                (item.startX + item.endX) / 2 - 20,
+                item.endX - 16,
               ],
-              scale: [1.1, 0.85, 0.35],
-              rotate: [0, -12, 8, 0],
-              opacity: [1, 1, 0.2],
+              y: [
+                item.startY - 36,
+                Math.min(item.startY, item.endY) - 70,
+                item.endY - 16,
+              ],
+              scale: [0.7, 1.25, 0.9, 0.28],
+              rotate: [-8, 12, -6, 0],
+              opacity: [0, 1, 1, 0.4],
             }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: 0, scale: 0.1 }}
             transition={{
-              duration: 0.95,
-              ease: [0.22, 1, 0.36, 1], // Smooth cubic-bezier parabolic motion
+              duration: 0.92,
+              times: [0, 0.35, 0.75, 1],
+              ease: [0.16, 1, 0.3, 1], // Smooth parabolic flight curve
             }}
-            className="absolute top-0 left-0 w-16 h-16 rounded-2xl bg-white border-2 border-[#c59b27] shadow-[0_10px_30px_rgba(197,155,39,0.7)] ring-4 ring-[#c59b27]/30 overflow-hidden flex items-center justify-center p-2 backdrop-blur-md z-[9999999]"
+            className="absolute top-0 left-0 w-20 h-20 rounded-2xl bg-white border-2 border-[#c59b27] shadow-[0_12px_40px_rgba(197,155,39,0.85)] ring-4 ring-[#c59b27]/40 flex items-center justify-center p-2.5 backdrop-blur-xl z-[99999999]"
           >
             {item.imgUrl ? (
               <img
                 src={item.imgUrl}
-                alt="Added product"
-                className="w-full h-full object-contain pointer-events-none rounded-lg"
+                alt="Product in flight"
+                className="w-full h-full object-contain pointer-events-none rounded-xl"
               />
             ) : (
-              <div className="w-full h-full bg-[#062524] rounded-lg flex items-center justify-center text-[#c59b27] text-lg font-black shadow-inner">
+              <div className="w-full h-full bg-[#062524] rounded-xl flex items-center justify-center text-[#c59b27] text-2xl font-black shadow-inner">
                 🛒
               </div>
             )}
+            {/* Sparkle Badge */}
+            <span className="absolute -top-2 -right-2 bg-[#c59b27] text-slate-950 font-black text-[10px] px-1.5 py-0.5 rounded-full shadow-md">
+              +1
+            </span>
           </motion.div>
         ))}
+
+        {/* Golden Ripple Burst at Cart Icon upon Arrival */}
+        {pulseTarget && (
+          <motion.div
+            key="cart-arrival-burst"
+            initial={{
+              x: pulseTarget.x - 24,
+              y: pulseTarget.y - 24,
+              scale: 0.5,
+              opacity: 1,
+            }}
+            animate={{
+              scale: [0.5, 2.2],
+              opacity: [1, 0],
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.65, ease: "easeOut" }}
+            className="absolute top-0 left-0 w-12 h-12 rounded-full border-2 border-[#c59b27] bg-[#c59b27]/30 shadow-[0_0_25px_rgba(197,155,39,0.9)] pointer-events-none z-[99999999]"
+          />
+        )}
       </AnimatePresence>
     </div>
   );
 }
+

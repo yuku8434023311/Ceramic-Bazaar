@@ -126,8 +126,13 @@ export function ProductDetail({ product, related }: { product: any; related: any
     const variantId = selectedVariant?.id || null;
     const variantName = selectedVariant ? `${selectedRam} ${selectedStorage}${selectedColor ? ` (${selectedColor})` : ''}`.trim() : null;
     if (status !== "authenticated") {
-      addToGuestCart(product.id, qty, { variantId, variantName, sku: activeSku, price: activePrice, color: selectedColor, ram: selectedRam, storage: selectedStorage });
-      toast.success("Added to cart");
+      addToGuestCart(product, qty, { variantId, variantName, sku: activeSku, price: activePrice, color: selectedColor, ram: selectedRam, storage: selectedStorage });
+      toast.success("Added to cart", {
+        action: {
+          label: "View Cart",
+          onClick: () => router.push("/cart"),
+        },
+      });
       return;
     }
     setAdding(true);
@@ -137,7 +142,16 @@ export function ProductDetail({ product, related }: { product: any; related: any
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId: product.id, quantity: qty, variantId, variantName, sku: activeSku, price: activePrice, color: selectedColor, ram: selectedRam, storage: selectedStorage })
       });
-      if (res.ok) toast.success("Added to cart"); else toast.error("Failed to add to cart");
+      if (res.ok) {
+        toast.success("Added to cart", {
+          action: {
+            label: "View Cart",
+            onClick: () => router.push("/cart"),
+          },
+        });
+      } else {
+        toast.error("Failed to add to cart");
+      }
     } finally { setAdding(false); }
   };
   const buyNow = async (e?: React.MouseEvent) => {
@@ -148,8 +162,8 @@ export function ProductDetail({ product, related }: { product: any; related: any
     if (status !== "authenticated") {
       const variantId = selectedVariant?.id || null;
       const variantName = selectedVariant ? `${selectedRam} ${selectedStorage}${selectedColor ? ` (${selectedColor})` : ''}`.trim() : null;
-      addToGuestCart(product.id, qty, { variantId, variantName, sku: activeSku, price: activePrice, color: selectedColor, ram: selectedRam, storage: selectedStorage });
-      router.push("/login?callbackUrl=/checkout");
+      addToGuestCart(product, qty, { variantId, variantName, sku: activeSku, price: activePrice, color: selectedColor, ram: selectedRam, storage: selectedStorage });
+      router.push("/checkout");
       return;
     }
     await add();

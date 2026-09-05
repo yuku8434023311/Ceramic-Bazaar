@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     const sort = searchParams.get("sort") ?? "newest";
     const minPrice = searchParams.get("minPrice");
     const maxPrice = searchParams.get("maxPrice");
-    const limit = Number(searchParams.get("limit") ?? 100);
+    const limit = Number(searchParams.get("limit") ?? 500);
 
     const where: any = { isActive: true };
     if (category) {

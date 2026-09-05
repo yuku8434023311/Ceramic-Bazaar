@@ -111,7 +111,17 @@ export default function CheckoutPage() {
             await fetch("/api/cart", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ productId: item.productId, quantity: item.quantity }),
+              body: JSON.stringify({
+                productId: item.productId,
+                quantity: item.quantity,
+                variantId: item.variantId || null,
+                variantName: item.variantName || null,
+                sku: item.sku || null,
+                price: item.price || null,
+                color: item.color || null,
+                ram: item.ram || null,
+                storage: item.storage || null,
+              }),
             });
           }
           clearGuestCart();

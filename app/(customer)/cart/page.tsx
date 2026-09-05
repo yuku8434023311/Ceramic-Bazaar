@@ -17,38 +17,78 @@ export default function CartPage() {
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
-    setLoading(true);
     try {
       if (status === "authenticated") {
+        setLoading(true);
         const res = await fetch("/api/cart");
         const d = res.ok ? await res.json() : [];
         setItems(Array.isArray(d) ? d : []);
+        setLoading(false);
       } else {
         const guestCart = getGuestCart();
-        const res = await fetch("/api/products");
-        const products = res.ok ? await res.json() : [];
-        const mapped = guestCart.map(item => {
-          const p = products.find((prod: any) => prod.id === item.productId);
-          return {
+        
+        // Immediate render with stored product snapshots
+        if (guestCart.length > 0) {
+          const initialMapped = guestCart.map(item => ({
             id: item.id,
             productId: item.productId,
-            quantity: item.quantity,
-            product: p || null
-          };
-        }).filter(item => item.product !== null);
-        setItems(mapped);
+            quantity: Number(item.quantity) || 1,
+            product: item.product || {
+              id: item.productId,
+              name: item.variantName || "CERA Official Product",
+              price: item.price || 2990,
+              image: "https://www.cera-india.com/sites/default/files/cera/product_images/S1013272.jpg",
+              slug: item.productId.replace("prod_", ""),
+              stock: 30,
+            }
+          }));
+          setItems(initialMapped);
+          setLoading(false);
+        } else {
+          setItems([]);
+          setLoading(false);
+        }
+
+        // Background sync to fetch fresh product specs / images
+        try {
+          const res = await fetch("/api/products?limit=500");
+          if (res.ok) {
+            const products = await res.json();
+            if (Array.isArray(products) && products.length > 0) {
+              const refreshed = guestCart.map(item => {
+                const liveProduct = products.find((prod: any) => prod.id === item.productId || prod.slug === item.productId);
+                return {
+                  id: item.id,
+                  productId: item.productId,
+                  quantity: Number(item.quantity) || 1,
+                  product: liveProduct || item.product || {
+                    id: item.productId,
+                    name: "CERA Official Product",
+                    price: item.price || 2990,
+                    image: "https://www.cera-india.com/sites/default/files/cera/product_images/S1013272.jpg",
+                    slug: item.productId.replace("prod_", ""),
+                    stock: 30,
+                  }
+                };
+              });
+              setItems(refreshed);
+            }
+          }
+        } catch (_) {}
       }
     } catch {
       toast.error("Failed to load cart items");
-    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (status !== undefined) {
+    load();
+    const handleCartChange = () => {
       load();
-    }
+    };
+    window.addEventListener("guest-cart-change", handleCartChange);
+    return () => window.removeEventListener("guest-cart-change", handleCartChange);
   }, [status]);
 
   const updateQty = async (id: string, q: number) => {
